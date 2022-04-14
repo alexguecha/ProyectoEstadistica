@@ -1,0 +1,35 @@
+---
+title: 'Crowfunding en el Mercado de Capitales Colombiano - Proyecto de Estadística para la Analítica de Datos'
+author: "Sergio Castañeda, Guillermo Castillo, Alexander Guecha"
+date: "24/04/2022"
+output:
+  word_document: default
+  pdf_document: default
+---
+```{r setup, include=T,error=FALSE,warning=T}
+knitr::opts_chunk$set(echo = T)
+```
+
+```{r}
+
+BdCrowfunding<-read.table(file.choose(), header = T, sep = ";")
+
+
+```
+
+```{r}
+SectorCampaña_= BdCrowfunding$region
+Rtabla=data.frame(table(Region_))
+porcentaje=prop.table(Rtabla[,2])
+Rtabla2= cbind(Rtabla, porcentaje)
+cum_frequencia=cumsum(Rtabla2[,2])
+Rtabla3= cbind(Rtabla2, cum_frequencia)
+cum_porcentaje=cumsum(Rtabla3[,3])
+Rtabla4= cbind(Rtabla3, cum_porcentaje)
+Rtabla4
+
+
+BPregion <- barplot(prop.table(table(Chile$region)),col=c("orange","blue","green","red","purple"),legend.text=c("Center","Metropolitan","North","South","City of Santiago"),ylim=c(0,0.8),xlim=c(0,11),main="Frecuencias relativas de participación por región",ylab ="Frecuencias Relativas")
+
+```
+
