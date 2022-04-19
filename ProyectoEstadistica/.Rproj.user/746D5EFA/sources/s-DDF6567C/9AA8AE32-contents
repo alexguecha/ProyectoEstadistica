@@ -1,0 +1,349 @@
+---
+title: "RegresiÃ³n Lineal MÃºltiple FundEstad_MAD"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T)
+```
+
+## Ejemplo1: Predictores Numéricos:
+
+
+Un estudio quiere generar un modelo que permita predecir la esperanza de vida media de los habitantes de una ciudad en función de diferentes variables.  
+
+Se dispone de información sobre: habitantes, analfabetismo, ingresos, esperanza de vida, muertes, graduados, heladas, área y densidad poblacional.
+
+  
+
+El dataset empleado es el state.x77  
+
+
+```{r message = FALSE}
+library(dplyr)
+datos <- as.data.frame(state.x77)
+
+knitr::kable(
+head(datos)
+)
+```
+  
+  
+_**Para facilitar su interpretación se renombra y se modifica las variables iniciales del dataset**_  
+
+
+```{r message = T, include=T} 
+
+datos <- rename(habitantes = Population, analfabetismo = Illiteracy,
+                ingresos = Income, esp_vida = `Life Exp`, muerte = Murder, graduados = `HS Grad`, heladas = Frost, area = Area,
+                .data = datos)
+
+# Creando una nueva variable:
+datos <- mutate(.data = datos, densidad_pobl = habitantes * 1000 / area)
+
+knitr::kable(
+head(datos)
+)
+```
+  
+  
+_**Paso 1: Analizar la relación entre variables (Matriz de correlación por pares):**_
+
+```{r message = T, include=T}
+knitr::kable(
+round(cor(x = datos, method = "pearson"), 3)
+)
+```
+
+
+
+_**Mejorando la matriz de correlaciones:**_
+
+```{r message = T, include=T}
+library(corrgram)
+library(gclus)
+corrgram(datos, order=TRUE, lower.panel=panel.shade,
+         upper.panel=panel.pie, text.panel=panel.txt,
+         main="Matriz de Correlaciones")
+```
+
+
+
+
+_**Otra forma:**_
+```{r message = T, include=T}
+corrgram(datos, order=NULL, lower.panel=panel.shade,
+         upper.panel=NULL, text.panel=panel.txt,
+         main="Matriz de Correlaciones")
+```
+
+
+
+
+_**Asignando las correlaciones**_
+```{r message = T, include=T}
+mydata.cor = cor(datos)
+knitr::kable(
+mydata.cor
+)
+
+
+# install.packages("corrplot")
+library(corrplot)
+
+corrplot(mydata.cor)
+corrplot(mydata.cor, type = "upper", order = "hclust", tl.col = "black", tl.srt = 45)
+corrplot(mydata.cor, type = "lower", order = "hclust", tl.col = "black", tl.srt = 45)
+```
+
+
+
+_**Ahora supervisamos el comportamiento distribucional de las variables:**_
+
+```{r message = T, include=T}
+library(psych)
+multi.hist(x = mydata.cor, dcol = c("blue", "red"), dlty = c("dotted", "solid"))
+```
+
+
+
+_**Combinando histogramas con Regresiones y Correlaciones:**_  
+
+```{r message = F, include=T}
+library(GGally)
+ggpairs(datos, lower = list(continuous = "smooth"),diag = list(continuous = "bar"), axisLabels = "none")
+```
+
+
+
+
+
+
+
+### MODELO DE REGRESIÓN LINEAL MÚLTIPLE:  
+
+_**2. Generar el modelo:**_  
+
+```{r message = T, include=T}
+modelo <- lm(esp_vida ~ habitantes + ingresos + analfabetismo + muerte + graduados + heladas + area + densidad_pobl, data = datos )
+
+summary(modelo)
+```
+
+_**Predicciones de Y**_
+```{r message = T, include=T}
+Predicciones<-modelo$fitted.values
+# Predicciones
+
+Y_dataset=datos$esp_vida
+Y_modelad=Predicciones
+Comparativo=cbind(Y_dataset, Y_modelad)
+Comparativo
+
+Diferecias=Y_dataset-Y_modelad
+Errores=cbind(Comparativo, Diferecias)
+Errores
+
+# Según el supuesto de Mínimos Cuadrados
+# La suma (promedio) de los Errores ~ 0:
+SupuestErrores=mean(Errores[,3])
+SupuestErrores
+```
+
+
+_**Que ocurre si eliminamos alguna de las variables predictoras?, Corramos el modelo únicamente con las variables significativas del ajuste inicial**_
+```{r message = T, include=T}
+modelo <- lm(esp_vida ~ habitantes +  muerte, data = datos )
+summary(modelo)
+```
+
+  
+  
+
+_**Diagnóstico del Modelo del Modelo Inicial (Modelo con todas las variables predictoras):**_
+```{r message = T, include=T}
+modelo <- lm(esp_vida ~ habitantes + ingresos + analfabetismo + muerte + graduados + heladas + area + densidad_pobl, data = datos )
+
+
+# Coeficientes del Modelo (bettas)
+coefficients(modelo) 
+
+# I.C. de la estimación de los bettas
+confint(modelo, level=0.95) 
+
+# Predicciones
+fitted(modelo) 
+
+# residuales
+residuals(modelo) 
+
+# Tabla ANOVA
+knitr::kable(
+anova(modelo) 
+)
+# La Matriz de Covarianzas del Modelo
+knitr::kable(
+vcov(modelo) 
+)
+```
+
+
+
+_**Gráficos Diagnósticos:**_
+```{r message = T, include=T}
+layout(matrix(c(1,2,3,4),2,2)) # División de la venta de gráficos
+plot(modelo)
+```
+
+
+
+
+
+
+_**Gráfico residuos estudentizados frente a valores ajustados por el modelo:**_  
+
+```{r message = T, include=T}
+library(ggplot2)
+ggplot(data = datos, aes(x = predict(modelo), 
+                        y = abs(rstudent(modelo))))+
+  geom_hline(yintercept = 3, color = "grey", linetype = "dashed")+
+
+# se identifican en rojo las observaciones con residuos estudentizados
+geom_point(aes(color = ifelse(abs(rstudent(modelo)) > 2, "red", "black")))+
+  scale_color_identity()+
+  labs(title = "Distribución de los residuos estudentizados", 
+       x = "Predicción modelo", 
+       y = "Residuos estudentizados")+
+  theme_bw() + theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+
+
+_**Detección de los residuos estandarizados > 3 considerados como outliers**_
+```{r message = T, include=T}
+which(rstudent(modelo) > 3)
+
+# Outliers
+# library(car) # En R_3.5
+# outlierTest(modelo)
+
+# install.packages("outliers")
+library(outliers)
+test <- grubbs.test(modelo$residuals )
+test
+```
+
+La prueba de Grubbs permite detectar si el valor más alto o más bajo en un conjunto de datos es un valor atípico.
+
+La prueba de Grubbs detecta un valor atípico a la vez (valor más alto o más bajo), por lo que las hipótesis nula y alternativa son las siguientes:
+
+    H0: el valor más alto no es un valor atípico
+    H1: el valor más alto es un valor atípico
+
+si queremos probar el valor más alto, o:  
+
+
+    H0: el valor más bajo no es un valor atípico
+    H1: el valor más bajo es un valor atípico  
+
+si queremos probar el valor más bajo.
+
+Como para cualquier prueba estadística, si el valor p es menor que el umbral de significancia elegido (generalmente α = 0.05), entonces se rechaza la hipótesis nula y concluiremos que el valor más bajo / más alto es un valor atípico. Por el contrario, si el valor p es mayor o igual que el nivel de significancia, no se rechaza la hipótesis nula, y concluiremos que, con base en los datos, no rechazamos la hipótesis de que el valor más bajo / más alto no es un valor atípico.
+
+Tenga en cuenta que la prueba de Grubbs no es apropiada para un tamaño de muestra de 6 o menos (n≤6).  
+  
+  
+
+  
+_**COLINEALIDAD - FACTOR DE INFLACIÓN DE LA VARIANZA:**_  
+
+_**VIF=1/(1-R^2)  donde R^2 es el coeficiente de determinación de la regresión del j-ésimo regresor sobre el resto. El valor mínimo de VIF es 1 y un VIF>10 puede indicar la existencia colinealidad (o  >5 siend estricto...) **_  
+```{r message = F, include=T} 
+library(caret)
+library(MASS)
+library(tidyverse)
+car::vif(modelo)
+```
+
+
+  
+  
+_**Autocorrelación: Estadístico Durbyn Whatson:**_
+```{r message = T, include=T}
+# graficamos el nuestros valores estimados
+plot(datos$esp_vida, fitted(modelo), cex = 1, pch = 21, bg = "darkorange", col = "black")
+lines(fitted(modelo))
+```
+
+_**Test de validación de autocorrelación, a través del estadístico de Durbyn & Whatson**_  
+  
+  _**Las Hipótesis en juego son:**_
+  
+  _**Ho: La autocorrelación verdadera es igual a 0**_
+  _**Ha: La autocorrelación verdadera es mayor que 0**_  
+  
+  _**En este caso se desea NO RECHAZAR LA HIPOTESIS NULA**_
+
+```{r message = T, include=T}
+# Cargamos el paquete lmtest para realizar la prueba Durbin-Watson
+library(lmtest) 
+dwtest(modelo)
+```
+
+
+
+
+_**UN PEQUEÑO EJEMPLO DE UN AJUSTE DE REGRESIÓN 3D (Dos variables idependientes X's que expliquen a Y):**_  
+
+```{r message = T, include=T}
+library(rgl)
+
+modelo2 <- lm(esp_vida ~ muerte + graduados, data=datos)
+
+# predicción del modelo2
+summary(modelo2)
+
+
+# Haciendo la Grilla
+plotdata2 <- expand.grid(graduados=seq(34,70,by=2),muerte=seq(1,16,by=1))
+plotdata2$pred1 <- predict(modelo2,newdata=plotdata2)
+
+
+# Graficando la Regresión Múltiple en 3D
+with(datos,plot3d(graduados, muerte, esp_vida,  col="blue", size=1, type="s"))
+with(plotdata2,surface3d(unique(graduados),unique(muerte),pred1,
+                       alpha=0.5,front="line", back="line"))
+```
+
+
+
+
+
+
+
+### Algorítmo automático de selección
+
+
+_**Este algorítimo automático identifica cuál es la mejor combinación de variables independeintes X's que proporcionan el R^2 más grande (Selección de los mejores predictores).**_ 
+
+En este caso se van a emplear la estrategia de stepwise mixto.  
+El estadístico empleado para determinar la calidad del modelo va a ser Akaike(AIC).  En este sentido, el modelo con el menor AIC será el mejor modelo:
+```{r message = T, include=T}
+step(object = modelo, direction = "both", trace = 1)
+```
+
+
+_**Elección del Modelo Final**_
+En Conclusión: El mejor modelo resultante del proceso de selección ha sido:
+
+```{r message = T, include=T}
+modelo <- (lm(formula = esp_vida ~ habitantes + muerte + graduados +
+                heladas, data = datos))
+
+summary(modelo)
+```
+
+

@@ -1,0 +1,286 @@
+
+
+
+# Importar la base de muestra de SECOP:
+
+SECOP1<-X3_MUESTRA_SECOP_I_2019   # Renombrando la base de trabajo
+SECOP1=read.table(file.choose(), head=T, sep=";")
+fix(SECOP1)
+
+
+
+# =========================================
+# Análisis Bivariado Cualitativo
+#==========================================
+# TABULACIÓN CRUZADA
+#==========================================
+# install.packages(“openxlsx”)
+# install.packages(“gmodels”)
+# install.packages(“dplyr”)
+
+# PRIMERA FORMA
+library(openxlsx)
+library(gmodels)
+library(dplyr)
+table(SECOP1$NivelEntidad,SECOP1$EstadodelProceso)
+
+
+
+# SEGUNDA FORMA
+library(descr)
+tabyl(SECOP1, NivelEntidad, EstadodelProceso, prop.r = TRUE, prop.c = TRUE, plot = F)
+
+
+
+# TERCERA FORMA
+# La tabla más completa
+library(gmodels)
+CrossTable(SECOP1$NivelEntidad,SECOP1$EstadodelProceso)
+
+
+
+
+# Podemos representar gráficamente estas tablas mediante diagramas de barras comparativas:
+# Aquí se puede graficas a través de un Diagrama de Barras Apiladas:
+library(ggplot2)
+ggplot(data=SECOP1, aes(x=EstadodelProceso, y=NivelEntidad, fill=NivelEntidad)) + 
+  geom_bar(stat="identity", position=position_stack()) +
+  scale_fill_manual(values=c("darkgreen", "blue","orange"))
+
+
+
+
+# El paquete ULPGCmisc calcula tablas y gráficos conjuntamente con la función freqTable():
+library(ggplot2) # Cargamos la librería
+ggplot(data = SECOP1)+
+  geom_bar(mapping = aes(x = EstadodelProceso, fill = NivelEntidad), position = "dodge")
+
+
+
+
+
+
+
+
+# =========================================
+# Análisis Bivariado Cuantitativo
+#==========================================
+
+# Coeficiente de Correlación de Pearson:
+
+library(MASS)
+library(ggplot2)
+data("Cars93")
+
+
+# GRáfico Simple (X,Y)
+ggplot(data = Cars93, aes(x = Weight, y = Horsepower)) + 
+  geom_point(colour = "red4") +
+  ggtitle("Diagrama de dispersión") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+
+# Ausencia de homogeneidad en el comportamiento de los datos:
+ggplot(data = Cars93, aes(x = Weight, y = Horsepower)) + 
+  geom_point(colour = "red4") +
+  geom_segment(aes(x = 1690, y = 70, xend = 3100, yend = 300),linetype="dashed") +
+  geom_segment(aes(x = 1690, y = 45, xend = 4100, yend = 100),linetype="dashed") +
+  ggtitle("Diagrama de dispersión") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+
+# Midiendo el nivel de correlación:
+cor(x = Cars93$Weight, y = log10(Cars93$Horsepower))
+
+# Otra forma:
+cor(x = Cars93$Weight, y = log10(Cars93$Horsepower), method = "pearson")
+
+
+# Significancia de la correlación:
+# Por muy alto que sea un coeficiente de correlación, si no es significativa se 
+# ha de considerar inexistente.
+
+cor.test(x = Cars93$Weight, y = log10(Cars93$Horsepower), alternative = "two.sided", conf.level  = 0.95, method = "pearson")  
+
+
+
+# A manera de ejemplo, si fuera monótona, y/o para intervalos
+cor(x = Cars93$Weight, y = log10(Cars93$Horsepower), method = "spearman")
+
+# Significancia:
+cor.test(x = Cars93$Weight, y = log10(Cars93$Horsepower),alternative = "two.sided", conf.level= 0.95, method="spearman")   
+
+
+
+# COEFICIENTE DE DETERMINACIÓN R^2:
+R2_pearson <- cor(x = Cars93$Weight, y = log10(Cars93$Horsepower), method = "pearson")
+R2_pearson <- R2_pearson^2
+R2_pearson
+
+
+
+
+# Regresión lineal simple:  GRÁFICAMENTE
+
+ggplot(data = Cars93, aes(x = Weight, y = log10(Horsepower))) + 
+  geom_point(colour = "red4", size=2) +
+  ggtitle("Análisis de Regresión Simple") +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+# Regresión lineal simple:  ANALÍTICAMENTE
+reg1 <- lm(log10(Horsepower) ~ Weight, data = Cars93)
+summary(reg1)
+
+
+
+
+
+
+
+
+
+
+
+#  Y que tal cruzar variables cualitativas con cuantitativas?...
+
+# =============================================================
+# ANÁLISIS BIVARIADO: CUALITATIVO vs. CUANTITATIVO
+# =============================================================
+# ALGUNAS REPRESENTACIONES GRÁFICAS:
+
+
+library(ggplot2)
+head(diamonds)
+
+ggplot(data = diamonds, mapping = aes(x = price)) + 
+  geom_freqpoly(mapping = aes(colour = cut), binwidth = 500)
+
+
+
+ggplot(diamonds) + 
+  geom_bar(mapping = aes(x = cut))
+
+
+
+# Una mirada de la distribución del precio por "corte de diamante" usando geom_boxplot ():
+ggplot(data = diamonds, mapping = aes(x = cut, y = price)) +
+  geom_boxplot()
+
+
+
+ggplot(data = diamonds, mapping = aes(x = cut, y = price)) +
+  geom_boxplot(fill = "white", colour = "#3366FF", outlier.colour = "red", outlier.shape = 1)
+
+
+
+ggplot(data = diamonds, mapping = aes(x = cut, y = price)) +
+  geom_boxplot(fill = "white", colour = "#3366FF", outlier.colour = "red", outlier.shape = NA) +
+  geom_jitter(width = 0.2)   # para agregar color a los puntos: , colour="red"
+
+
+
+
+
+
+
+
+#  Otro ejemplo - 93CARS
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) +
+  geom_boxplot(aes(colour = class))
+
+
+
+
+
+# Para que la tendencia sea más fácil de ver, podemos reordenar la clase según 
+# un valor central, en este caso de la variable "mpg".
+ggplot(data = mpg) +
+  geom_boxplot(mapping = aes(x = reorder(class, hwy, FUN = median), y = hwy))
+
+
+
+
+# Si tiene nombres de variables largos, geom_boxplot () funcionará mejor si lo 
+# gira 90 °. Puedes hacer eso con coord_flip ():
+
+ggplot(data = mpg) +
+  geom_boxplot(mapping = aes(x = reorder(class, hwy, FUN = median), y = hwy)) +
+  coord_flip()
+
+
+
+
+
+
+
+# Otro enfoque es mostrar aproximadamente el mismo número de puntos en cada contenedor. 
+# Ese es el trabajo de:   cut_number ()
+
+ggplot(data = diamonds, mapping = aes(x = carat, y = price)) + 
+  geom_boxplot(mapping = aes(group = cut_number(carat, 20)))
+
+
+
+
+
+#Los diagramas de caja y bigotes son una buena opción para explorar relaciones 
+# categóricas-numéricas. Proporcionan mucha información sobre cómo cambia la distribución 
+# de la variable numérica entre categorías. A veces, es posible que deseemos explorar aún 
+# más la información sobre estas distribuciones en un diagrama. Una forma de hacer esto es 
+# hacer varios histogramas (o diagramas de puntos, si no tenemos muchos datos).
+
+# Ya sabemos cómo hacer un histograma, y hemos visto cómo se utilizan propiedades estéticas 
+# como el color y el relleno para distinguir diferentes categorías de una variable en una 
+# capa. Esto sugiere que podemos superponer más de un histograma en un solo gráfico. 
+# Usemos esta idea para ver cómo la distribución de muestra de la velocidad del viento 
+# (viento) difiere entre las clases de tormentas:
+
+library(nasaweather)  # Para usar la base de datos storms
+library(dplyr) # Para usar la función mutate
+
+
+# Con la función mutate() podemos realizar tranformaciones de variables en un data frame. 
+# A menudo, tendremos la necesidad de crear nuevas variables que se calculan a partir de 
+# variables existentes, mutate() nos proporciona una interface clara para realizar este tipo 
+# de operaciones.
+
+storms_alter <- mutate(storms, year = as.character(year))
+head(storms_alter)
+
+
+ggplot(storms_alter, aes(x = wind, fill = status))  +
+  geom_histogram(position = "identity", alpha = 0.6, binwidth = 5) + 
+  xlab("Wind Speed (mph)")
+
+
+
+
+
+# Trazar varios histogramas en una capa como esta coloca mucha información en un gráfico, 
+# pero puede ser difícil entender esto cuando los histogramas se superponen mucho. Si los 
+# histogramas superpuestos son demasiado difíciles de interpretar, podríamos considerar 
+# producir uno separado para cada categoría. Ya hemos visto una forma rápida de hacer esto. 
+# El facetado funciona bien aquí:
+
+
+ggplot(storms_alter, aes(x = wind))  +
+  geom_histogram(alpha = 0.8, binwidth = 5, aes(colour = status)) + 
+  xlab("Wind Speed (mph)") +
+  facet_wrap(~ status, ncol = 4)
+
+
+
+
+
+
+
+
+
+

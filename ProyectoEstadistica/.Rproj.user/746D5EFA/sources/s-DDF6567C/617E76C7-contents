@@ -1,0 +1,35 @@
+# libreriade colores
+library(RColorBrewer)
+# cargando la base de datos airpooll
+mydata=read.table(file.choose(), header=T, sep=";")
+fix(mydata)
+Type= mydata$Relig
+Type
+# Crear una tabla de resumen
+tabla=data.frame(table(Type))
+tabla
+porcentaje=prop.table(tabla[,2])
+porcentaje
+tabla2= cbind(tabla, porcentaje)
+tabla2
+
+barplot(tabla(mydata$Relig), col = "darkiblue", main="Diagrmad de barras")
+
+fix(tabla2)
+cum_frequencia=cumsum(tabla2[,2])
+tabla3= cbind(tabla2, cum_frequencia)
+tabla3
+cum_porcentaje=cumsum(tabla3[,3])
+tabla4= cbind(tabla3, cum_porcentaje)
+tabla4
+pie(tabla4[,3],labels=tabla[,1], clockwise=TRUE,radius=1,border="black",main="Diagrama de Sectores")
+?barplot
+
+
+Chile<-X1_ChileTaller
+library(dplyr)
+#bdChile<-X1_ChileTaller
+sel<-c("N","S")
+Chile_NteySur <- Chile %>% filter(region %in% sel)
+View(Chile_NteySur)
+View(Chile)

@@ -1,0 +1,194 @@
+---
+title: 'Taller #2 - Estadistica para la analítica de datos'
+author: "Sergio Castañeda, Guillermo Castillo, Alexander Guecha"
+date: "19/3/2022"
+output:
+  word_document: default
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r cars}
+
+BDD1 = read.table(file.choose(),sep = ";", head = T)
+
+
+```
+
+# Great Plains Roofing & Siding Company
+## Introducción
+
+Great Plains Roofing and Sinding Company Inc., vende productos para techos y recubrimientos de paredes a minoristas en reparación de casas, como Lowe´s y Home Deport y a contratistas comerciales. El propietario desea estudiar el efecto de diversas variables sobre el valor de las tarjetas americanas vendidas (miles de dólares). El gerente de marketing argumenta que la compañía debe gastar más dinero en publicidad, en tanto que un investigador de mercado sugiere que se debe enfocar más en diferenciar su marca y su producto de sus competidores.
+La compañía dividió a Estados Unidos en 26 distritos de marketing. En cada distrito reunió información sobre las siguientes variables: Volumen de Ventas (en miles de dólares), Dólares Gastados en Publicidad, Número de Cuentas Activas, Número de Marcas de Competidores y una Calificación del Potencial del Distrito.
+Los datos obtenidos en una muestra de los 26 distritos en las tiendas Great Plains Roofing and Sinding Company Inc., durante un mes de ventas, se presentan en una base que se adjunta a este documento.
+
+## Definition of done: Informe para los Directivos de la Great Plains Roofing & Sinding Company Inc.
+
+Los directivos de la Great Plains Roofing and Sinding Company Inc. desean emplear esta información acerca de sus clientes para evaluar sus productos y en síntesis, su posicionamiento.
+Con dichos resultados, los directivos tomarán decisiones vitales respecto a sus futuras promociones de cupones y rebajas; además de caracterizar el tipo de clientes que frecuentan sus tiendas.
+
+## Punto 1. Requerimientos Estadísticos para el Informe de los Directivos de la Great Plains Roofing & Sinding Company
+
+Emplee los métodos tabulares, gráficos y numéricos de análisis para ayudar a los directivos de la Great Plains Roofing and Sinding Company Inc., a elaborar un perfil de sus clientes y a evaluar su posicionamiento.
+Proporcione un informe corporativo de las estadísticas del estudio en cuestión. Su informe debe contener los siguientes resultados estadísticos junto con sus interpretaciones y conclusiones generales.
+
+## Punto 2. Indicaciones al gerente de marketing
+
+1. Formule un modelo de regresión que pueda ser usado para explicar las ventas, junto con su prueba de utilidad y verificación de supuestos. ¿Se puede concluir que algunas de las variables de este sondeo son útiles para explicar la variación en las ventas? Verifíquelo.
+
+
+## Resolución punto 1. Informe para los Directivos de la Great Plains Roofing & Sinding Company Inc.
+
+## Analisis descriptivo Variable **Ventas**
+
+```{r}
+BDD1 <- BDD1[with(BDD1, order(BDD1$Ventas)),]
+
+hist(BDD1$Ventas)
+```
+```{r}
+
+library(agricolae)
+par(mfrow=c(1,2),mar=c(4,4,0,1),cex=0.6)
+h1<-graph.freq(BDD1$Ventas, density=6, col="blue",border="red",ylim=c(0,0.6), frequency=2,xlab="Ventas")
+h2<-graph.freq(BDD1$Ventas, border=0,ylim=c(0,0.6), frequency=2,xlab="Ventas")
+polygon.freq(h2,col="blue", frequency=2)
+
+```
+
+```{r}
+library(fBasics)
+basicStats(BDD1$Ventas)
+```
+
+## Analisis descriptivo simple variable dependiente: **Ventas**
+
+En el anterior análisis descriptivo simple de la variable Ventas, se puede observar que de manera general los presentarios distritos presentaron niveles mínimos de ventas de 31 dólares y niveles máximos de ventas de 339 dólares, en promedio las ventas para todas las empresas fueron de 118 dólares con una desviación estandar posible de +/- 56 dólares. Por otro lado, se puede identificar que la variable ventas tiene una distribución normal con una kurtosis levemente leptocurtica (Kurtosis = 4.23) y que está en alguna medida sesgada a la derecha (Sweakness = 1.93), no obstante aún cuando existen algunos datos atípicos, podemos concluir que en su mayoría las empresas tuvieron un valor de ventas de 104 dólares según el estadístico de la moda.
+
+
+## Analisis descriptivo simple variable independiente de la hipótesis: **Inversión Publicidad**
+```{r}
+
+library(agricolae)
+par(mfrow=c(1,2),mar=c(4,4,0,1),cex=0.6)
+h1<-graph.freq(BDD1$InvPub, density=6, col="blue",border="red",ylim=c(0,0.3), frequency=2,xlab="Inversión en publicidad")
+h2<-graph.freq(BDD1$InvPub, border=0,ylim=c(0,0.3), frequency=2,xlab="Inversión en publicidad")
+polygon.freq(h2,col="blue", frequency=2)
+
+```
+
+```{r}
+library(fBasics)
+basicStats(BDD1$InvPub)
+```
+```{r}
+hist(BDD1$InvPub)
+```
+
+En el segundo caso en la variable Inversión en publicidad, de la cual se tiene la hipotesis de que puede influír de manera directa en la cantidad de ventas, se encuentra que los distritos encuestados hacen inversiones minimas de 1 dólar y máximo de 18 dólares en publicidad. En promedio la inversión que hacen los distritos rondan los 8 dólares con una desviación estandar de +/- 4.16 dólares, para una distribución que según la grafica no parece seguir una distribución normal dado la presencia de valores atípicos u outliers de distritos con muy baja inversión en publicidad.
+
+Desde el entorno de marketing y los costos que hoy en día tiene hacer pauta, se tiene la hipótesis de que con estos niveles de inversión   no se esperaría una gran influencia de esta variable en el nivel de ventas, puesto que son inversiones que aun cuando sean el valor máximo de 18 dólares, sigue siendo una inversión muy baja que en otros contextos no genera ningún efecto pero que validaremos en el siguiente punto si tiene algún impacto sobre las ventas.
+
+
+## Analisis de ventas por clasificación del territorio
+
+```{r}
+library(ggplot2)
+ggplot(data = BDD1, aes(x = Clasificacion, y = Ventas)) + 
+  geom_point(colour = "red4") +
+  ggtitle("Diagrama de dispersión cantidad de ventas vs clasificación del territorio") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+De acuerdo al anterior grafico y haciendo un analisis desde el ticket **promedio** de ventas podemos encontrar que los distritos que se encuentran en la nomenclatura entre el distrito 14,15,16,17 y distrito 18 hay un contexto de mercado en donde se benefician en mayor medida las ventas, razón por la cual la primera recomendación al gerente de marketing puede ir enfocada a entender que sucede en estos distritos y asi replicarlo en distritos con muy bajo nivel de ventas como el distrito 2, 3 , 5.
+
+```{r}
+ggplot(data = BDD1, aes(x = Clasificacion, y = Ventas)) + 
+  geom_bar(stat = "identity") +
+  coord_flip()
+  ggtitle("Diagrama de barras cantidad de ventas totales por clasificación del territorio")
+```
+
+
+En adición si lo vemos por las **ventas totales acumuladas**, se puede encontrar que los territorios que reunieron mayor cantidad de ventas fueron los territorios con clasificación de nivel 8, 6, 10, 11, 12 y 13. Por otro lado los territorios de nivel 18 requieren especial atención dado que sus ventas son bajas.
+
+
+# Conclusión análisis exploratorio
+En virtud del análisis realizado se concluye que las variables **No** y **Clasificacion**, aunque son numéricas, estas son variables cualitativas nominal y ordinal respectivamente, las cuales no serán tenidas en cuenta en el análisis de regresión solicitado por la compañía, no obstante, cabe la posibilidad de que la variable **Clasificacion**, sea analizada mediante una regresión logística.
+
+
+## Resolución punto 2. Indicaciones al gerente de marketing
+
+
+```{r}
+library(GGally)
+BDD2=BDD1[2:5]
+ggpairs(BDD2, lower = list(continuous = "smooth"),diag = list(continuous = "bar"), axisLabels = "none")
+```
+
+
+De acuerdo con el resultado anterior, se puede observar que al no tener en cuenta las variables cualitativas y generar el análisis correlacional, no se encuentra ninguna correlación significativa entre las variables cuantitativas suministradas. Desde este punto se puede concluir que no habría un modelo que genere un ajuste adecuado, mas sin embargo se presenta el analisis confirmatorio en el siguiente punto.
+
+
+
+*Generación de un Modelo que permita hacer una buena predicción*
+
+**Modelo que incluye todas las variable cuantitativas **
+
+```{r}
+modelo1 <- lm(Ventas ~ InvPub + NumCuentas + NumComp, data = BDD1 )
+summary(modelo1)
+
+Predicciones1<-modelo1$fitted.values
+
+library(ggplot2)
+ggplot(data = BDD1, aes(x = predict(modelo1), 
+                         y = abs(rstudent(modelo1))))+
+  geom_hline(yintercept = 3, color = "grey", linetype = "dashed")+
+  geom_point(aes(color = ifelse(abs(rstudent(modelo1)) > 2, "red", "black")))+
+  scale_color_identity()+
+  labs(title = "Distribución de los residuos estudentizados", 
+       x = "Predicción modelo", 
+       y = "Residuos estudentizados")+
+  theme_bw() + theme(plot.title = element_text(hjust = 0.5))
+```
+Haciendo el modelo con todas la variables (InvPub, Numcuentas y NumComp) se concluye que no son significativas, afirmando la conclusión realizada desde el análisis de correlación anteriormente expueto, en el cual se podía percibir que la variables predictoras relacionadas no guardaban ninguna relación con el resultado de las ventas. En efecto, el R-Cuadrado es solo 0.005551, lo cual es muy bajo y descarta un adecuado ajuste en el modelo para tomar decisiones.
+
+**Mejor modelo según los resultados del modelo anterior**
+
+
+```{r}
+step(object = modelo1, direction = "both", trace = 1)
+
+modeloDef <- lm(Ventas ~ Clasificacion ,data = BDD1 )
+
+summary(modeloDef)
+
+PrediccionesDef<-modeloDef$fitted.values
+
+ggplot(data = BDD1, aes(x = predict(modeloDef), 
+                        y = abs(rstudent(modeloDef))))+
+  geom_hline(yintercept = 3, color = "grey", linetype = "dashed")+
+  geom_point(aes(color = ifelse(abs(rstudent(modeloDef)) > 2, "red", "black")))+
+  scale_color_identity()+
+  labs(title = "Distribución de los residuos estudentizados", 
+       x = "Predicción modelo", 
+       y = "Residuos estudentizados")+
+  theme_bw() + theme(plot.title = element_text(hjust = 0.5))
+```
+
+De acuerdo a la distribución de residuos estudentizados, los residuos están en un rango de 0 a 3, sin embargo existen algunos datos atípicos, lo cual sigue confirmado que el modelo de regresión no es el adecuado para estimar el resultado de ventas.
+
+
+
+
+
+
