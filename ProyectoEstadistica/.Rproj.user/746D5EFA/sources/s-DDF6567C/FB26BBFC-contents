@@ -192,6 +192,29 @@ pie(PTtabla4[,3],labels=PTtabla4[,1], clockwise=TRUE,radius=1,border="black",mai
 
 ```
 
+### Variable: Ingresos Mes
+
+```{r}
+IngresosMes = BdCrowfunding$IngresosMes
+IMtabla=data.frame(table(IngresosMes))
+porcentaje=prop.table(IMtabla[,2])
+IMtabla2= cbind(IMtabla, porcentaje)
+cum_frequencia=cumsum(IMtabla2[,2])
+IMtabla3= cbind(IMtabla2, cum_frequencia)
+cum_porcentaje=cumsum(IMtabla3[,3])
+IMtabla4= cbind(IMtabla3, cum_porcentaje)
+IMtabla4
+knitr::kable(
+  (IMtabla4)
+)
+
+colors <- c(2, 3,4,5,6)
+BPProposito <- barplot(prop.table(table(BdCrowfunding$Proposito)), col= colors,main="Frecuencias relativas por Tipo de Inversionista",ylim=c(0,0.5),ylab ="Frecuencias Relativas",las=2 )
+
+
+pie(PTtabla4[,3],labels=PTtabla4[,1], clockwise=TRUE,radius=1,border="black",main="Diagrama de Sectores")
+
+```
 
 
 

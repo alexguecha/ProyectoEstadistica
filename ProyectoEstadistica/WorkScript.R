@@ -139,8 +139,27 @@ PTtabla4
 knitr::kable(
   (PTtabla4)
 )
+summary(BdCrowfunding$IngresosMes)
 
-
+library(fdth)
+is.na(x = BdCrowfunding$IngresosMes)
+sum(is.na(x = BdCrowfunding$IngresosMes))
+IMtabla1 <- fdt(sort(BdCrowfunding$IngresosMes)[1000000:10000000], k = 5)
+IMtabla <- fdt(BdCrowfunding$IngresosMes, start=0, end=11000000000, h=10)
+IMtabla <- fdt(BdCrowfunding$IngresosMes,breaks="Sturges",right=F)
+IMtabla1
+IngresosMes = BdCrowfunding$IngresosMes
+IMtabla=data.frame(table(IngresosMes))
+porcentaje=prop.table(IMtabla[,2])
+IMtabla2= cbind(IMtabla, porcentaje)
+cum_frequencia=cumsum(IMtabla2[,2])
+IMtabla3= cbind(IMtabla2, cum_frequencia)
+cum_porcentaje=cumsum(IMtabla3[,3])
+IMtabla4= cbind(IMtabla3, cum_porcentaje)
+IMtabla4
+knitr::kable(
+  (IMtabla4)
+)
 
 
 
