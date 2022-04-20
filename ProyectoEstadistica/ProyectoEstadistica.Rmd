@@ -192,16 +192,74 @@ pie(PTtabla4[,3],labels=PTtabla4[,1], clockwise=TRUE,radius=1,border="black",mai
 
 ```
 
+### Variable: Ingresos Mes
+
+```{r}
+library(fdth)
+
+IMtabla <- fdt(BdCrowfunding$IngresosMes,K=5)
+
+knitr::kable(
+  (IMtabla)
+)
+
+plot(IMtabla,type='fh',main="Histograma de frecuencias absolutas",
+     xlab="Ingresos Mes",ylab="Conteos",col="red")
+
+plot(IMtabla,type='fp',main="Poligono de frecuencias absolutas",
+     xlab="Ingresos Mes",ylab="Conteos",col="black",lwd=2) 
+
+```
 
 
+### Variable: Patrimonio
+
+```{r}
+
+POtabla <- fdt(BdCrowfunding$Patrimonio,breaks="Sturges",right=F)
+
+knitr::kable(
+  (POtabla)
+)
+
+```
 
 
+### Variable: Monto Inversión
 
+```{r}
 
+MItabla <- fdt(BdCrowfunding$MontoInversion, start=50000, end=156752000, h=31030000)
 
+knitr::kable(
+  (MItabla)
+)
 
+```
 
+### Variable: Edad
 
+```{r}
+
+Edtabla <- fdt(BdCrowfunding$Edad, start=2, end=90, h=17.6)
+
+knitr::kable(
+  (Edtabla)
+)
+
+```
+
+### Variable: Cantidad Inversiones
+
+```{r}
+
+CItabla <- fdt(BdCrowfunding$CantidadInversiones, k=5)
+
+knitr::kable(
+  (CItabla)
+)
+
+```
 
 
 

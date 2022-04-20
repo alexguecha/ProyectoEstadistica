@@ -3,7 +3,7 @@
     "path": "~/GitHub/ProyectoEstadistica/ProyectoEstadistica/ProyectoEstadistica.Rmd",
     "project_path": "ProyectoEstadistica.Rmd",
     "type": "r_markdown",
-    "hash": "2580634151",
+    "hash": "4080626435",
     "contents": "",
     "dirty": false,
     "created": 1650378384760.0,
@@ -12,15 +12,15 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "187,63",
-        "scrollLine": "170"
+        "cursorPosition": "208,0",
+        "scrollLine": "194"
     },
     "folds": "",
-    "lastKnownWriteTime": 1650405234,
+    "lastKnownWriteTime": 1650490311,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1650405234607,
+    "last_content_update": 1650490311216,
     "read_only": false,
     "read_only_alternatives": []
 }

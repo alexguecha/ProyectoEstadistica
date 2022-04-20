@@ -1,0 +1,111 @@
+#Limpiar memoria
+rm(list = ls())
+gc()
+
+###### Directorio de trabajo
+setwd("C:/Users/Nicolas/Desktop/CURSO_FUNDAMENTOS DE ESTAD?STICA PARA ANAL?TICA DE DATOS/Semana 2/Codigos/Merge_R")
+
+
+#Libreria
+library(dplyr)
+
+###### Bases de datos
+###### Cargar las bases de datos
+Cartera <- read.csv(file = "Cartera.csv",sep = ";",dec = ",")
+Oficina <- read.csv(file = "Oficinas.csv",sep = ";",dec = ",")
+Ahorros <- read.csv(file = "CuentaDeAhorro.csv",sep = ";",dec = ",")
+Cte <- read.csv(file = "CuentaCorriente.csv",sep = ";",dec = ",")
+Individuos <- read.csv(file = "Individuos.csv",sep = ";",dec = ",")
+
+
+#Ver las bases de datos
+#View(Individuos)
+#View(Cartera)
+#View(Ahorros)
+#View(Cte)
+#View(Oficina)
+
+#Mostrar la naturaleza de las variables.
+str(Individuos)
+
+#### Dimension de las bases de datos
+dim(Individuos)
+dim(Oficina)
+
+#### Nombres de la base de datos 1(Individuos)
+names(Individuos)
+
+#### Pegado (Cruce) de las bases de datos
+Base <- merge(x = Individuos, y = Oficina, by.x = "Oficina",
+              by.y = "Oficina", all.x = T)
+
+##Explorar los datos
+dim(Base)
+View(Base)
+
+#### Revisi?n de duplicados
+duplicated(x = Base$Oficina,incomparables = T)
+sum(duplicated(x = Base$Oficina,incomparables = T))
+duplicated(x = Base$llave,incomparables = T)
+sum(duplicated(x = Base$llave,incomparables = T))
+which(duplicated(x = Base$Oficina,incomparables = T))
+Base$Oficina[which(duplicated(x = Base$Oficina,incomparables = T))]
+
+#### Revisi?n de faltantes
+is.na(x = Base$Oficina)
+sum(is.na(x = Base$Oficina))
+
+
+
+Consulta <- Base %>% group_by(GENERO) %>% 
+   summarise(mean(Edad))
+View(Consulta)
+
+Consulta2 <- Base %>% 
+   group_by(EDUCACION,GENERO) %>% 
+   summarise(PromedioEdad = mean(Edad))
+View(Consulta2)
+
+unique(Base$Departamento)
+
+Consulta3 <- Base %>% filter(Departamento == "Meta") %>% 
+   group_by(EDUCACION,GENERO) %>% 
+   summarise(Personas = n(),
+             PromedioEdad = mean(Edad))
+View(Consulta3)
+
+Consulta3$PromedioEdad <- round(x = Consulta3$PromedioEdad,
+                                digits = 0)
+
+sort(x = Consulta3$PromedioEdad,decreasing = T)
+
+Consulta4 <- Base %>% filter(Departamento == "Meta") %>% 
+   group_by(EDUCACION,GENERO) %>% 
+   summarise(Personas = n(),
+             PromedioEdad = round(x = mean(Edad),digits = 0)) %>% 
+   arrange(desc(PromedioEdad))
+View(Consulta4)
+
+Consulta5 <- Base %>% filter(Departamento == "Meta") %>% 
+   group_by(EDUCACION,GENERO) %>% 
+   summarise(Personas = n(),
+             PromedioEdad = round(x = mean(Edad),digits = 0),
+             DesviacionEdad = sd(Edad)) %>% 
+   arrange(desc(PromedioEdad))
+View(Consulta5)
+
+hist(Consulta5$PromedioEdad)
+barplot(Consulta5$Personas,xlab="Combinaci?n",
+        ylab="Conteos",col="red",
+        main = "Cantidad de personas por combinaci?n")
+
+Consulta5$Combinacion <- paste(Consulta5$EDUCACION,
+                               Consulta5$GENERO,sep = "-")
+
+windows()
+Grafico <- barplot(Consulta5$Personas,xlab="Combinaci?n",
+                   ylab="Conteos",col="red",
+                   main = "Cantidad de personas por combinaci?n")
+text(x = Grafico,
+     y = Consulta5$Personas - 0.5,
+     label = paste("Grupo",1:6,sep = ""))
