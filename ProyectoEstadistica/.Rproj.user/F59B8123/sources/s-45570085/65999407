@@ -1,26 +1,26 @@
 {
-    "id": "9A56F8BD",
-    "path": "C:/Oficina/2022/Otros/ESTADI~1/CURSO_~1/CURSO_~4/CURSO_~1/SE1D97~1/DESCRI~1/ESTADI~1.R",
-    "project_path": null,
+    "id": "65999407",
+    "path": "~/GitHub/ProyectoEstadistica/ProyectoEstadistica/WorkScript.R",
+    "project_path": "WorkScript.R",
     "type": "r_source",
     "hash": "0",
     "contents": "",
     "dirty": false,
-    "created": 1650481831574.0,
+    "created": 1650380357728.0,
     "source_on_save": false,
-    "relative_order": 7,
+    "relative_order": 2,
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "197,0",
-        "scrollLine": "184"
+        "cursorPosition": "248,0",
+        "scrollLine": "0"
     },
     "folds": "",
-    "lastKnownWriteTime": 1645118106,
+    "lastKnownWriteTime": 1650490314,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1645118106,
+    "last_content_update": 1650490314501,
     "read_only": false,
     "read_only_alternatives": []
 }

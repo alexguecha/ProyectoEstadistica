@@ -1,24 +1,26 @@
 {
-    "id": "A3E33159",
-    "path": "C:/Users/aguecham/Downloads/Visualizacion_sesion 1.R",
+    "id": "9A56F8BD",
+    "path": "C:/Oficina/2022/Otros/ESTADI~1/CURSO_~1/CURSO_~4/CURSO_~1/SE1D97~1/DESCRI~1/ESTADI~1.R",
     "project_path": null,
     "type": "r_source",
     "hash": "0",
     "contents": "",
     "dirty": false,
-    "created": 1650481713258.0,
+    "created": 1650481831574.0,
     "source_on_save": false,
-    "relative_order": 5,
+    "relative_order": 7,
     "properties": {
         "source_window_id": "",
-        "Source": "Source"
+        "Source": "Source",
+        "cursorPosition": "197,0",
+        "scrollLine": "0"
     },
     "folds": "",
-    "lastKnownWriteTime": 1650461980,
+    "lastKnownWriteTime": 1645118106,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1650461980,
+    "last_content_update": 1645118106,
     "read_only": false,
     "read_only_alternatives": []
 }

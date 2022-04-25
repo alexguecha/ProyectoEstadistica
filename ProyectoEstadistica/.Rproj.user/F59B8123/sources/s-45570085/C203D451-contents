@@ -1,0 +1,149 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+# Lectura Fumadores -  Universidad Central
+## **FUNDAMENTOS DE ESTADÍSTICA PARA ANALÍTICA DE DATOS**
+### Maestría en analítica de datos
+
+
+Es esta lectura vamos a afianzar los conocimientos ya adquiridos en el análisis exploratorio de datos (**EDA**). Esta lectura se basa en la tabla `fumadores.csv`, la cual contiene información sobre las primas de seguro que se han pagado en una empresa dedicada a esta labor.
+
+-----
+
+# ¿Qué patrones podemos encontrar sobre los costos de atención médica para los fumadores?
+
+-----
+
+## Introducción
+
+**Contextos** 
+
+1. **Laboral:** Trabaja en una compañía de seguros de salud y se le ha encomendado comprender mejor cómo se han venido ajustando los costos (o cargos) para los fumadores. Debe investigar los algunos datos historicos en busca de aclarar las características de los usuarios fumadores de esta empresa para aclarar las características de los mismos, esto como parte de un gran proyecto.
+
+2. **Comercial:** Se busca dar respuesta a la siguiente pregunta: **"¿Que perfil de pago, personal y regional tiene un fumador?"**
+
+3. **Información:** Los datos están en un archivo CSV público llamado `fumadores.csv`, este, tiene la información sobre varias características que pueden afectar los pagos en el seguro de salud.
+
+En esta lectura, utilizará lo que sabe sobre estadísticas básicas, junto con R y librerias de gráficos y manejo de dataframes, Se centrará en asegurarse de haber elegido las medidas y los gráficos apropiados para transmitir sus observaciones.
+
+## Cargue de los datos
+
+Vamos a cargar las librerias utilizadas, asi como la información.
+
+```{r,echo=TRUE,message=FALSE}
+## Librerias usadas
+library(psych)
+library(tidyverse)
+```
+
+```{r setup, include=TRUE}
+path = "C:/Users/Nicolas/Desktop/CURSO_FUNDAMENTOS DE ESTADÍSTICA PARA ANALÍTICA DE DATOS/Semana 5/fumadores.csv"
+df = read.csv2(path, sep = ",", stringsAsFactors = T, na.strings="",dec = ".")
+```
+## Primeros comentarios de la información.
+
+```{r}
+str(df)
+```
+
+
+Las varibles tiene la siguiente información:
+
+* **edad:** la edad de la persona en años.
+* **sexo:** hombre o mujer.
+* **bmi:** el Índice de Masa Corporal de la persona
+* **hijos:** el número de hijos que tiene la persona
+* **fumador:** si la persona es fumadora o no
+* **region:** sur_oeste, sur_este, nor_este, nor_oeste, 4 regiones en los Estados Unidos.
+* **prima:** El costo total de la prima del seguro para la persona.
+
+Como es costumbre, vamos a revisar el cargue de la información así como una primeras características del dataframe.
+
+```{r}
+head(df)
+```
+
+Podemos resumir las variables de la siguiente manera:
+
+| **Tipo**         | **Variable**            |
+|:----------------:|:-----------------------:|
+| **Continua**     | bmi, prima              |
+| **Discreta**     | edad, hijos             |
+| **Nominal**      | sexo, fumador, region   |
+| **Ordinal**      |                         |
+
+
+## Estadísticas de resumen para cada variable
+
+
+Recodemos que deseamos determinar el perfil de pago, personal y regional de los fumadores en los EE.UU. Vamos a revisar las **estadísticas de resumen** para cada una de nuestras variables. Debemos enfocarnos en la información sobre los fumadores, no lo olvidemos.
+
+```{r}
+summary(df)
+```
+### Ejercicio 1.
+
+De la inspección rápida de `summary(df)`, haga los comentario que se destaquen en la información.
+
+
+
+### Ejercicio 2. 
+
+Realice gráficos descriptivos (Haga uso de la libreria `ggplot2`) para cada una de la varibles en busca de ampliar el conocimiento de la información. Además, realice comentarios adicionales al a los ya presentados en el numeral anterior. 
+
+Vamos ahora a buscar información sobre los `fumadores`, medidas como la media y la mediana, que son medidas de tendencia central, nos proporcionan la idea de cómo se ve el elemento típico (más central) de la variable cuantivativa.
+
+### Ejercicio 3.
+
+Encuentre las medidas destacadas para la varible `prima`. Haga los comentarios que pertinetes.
+
+### Ejercicio 4.
+
+Construya una tabla donde se muestre el promedio que pagan los fumadores y los no fumadores.
+Además, determine cual es la diferencia porcental entre ambas medias.
+
+### Ejercicio 5.
+
+Construya un bar plot donde su muestre las porciones de los fumadores dependiendo del género, es decir, un gráfico de `sexo` vs `fumador`.
+
+### Ejercicio 6.
+
+Construya una tabla donde se comparen la media, la mediana y los percentiles 25 y 75 para hombres y mujeres fumadoras. ¿Cuál es la diferencia porcentual de los promedios? Y las de las medianas?
+
+¿Se podría pensar que los hombres pagan cargos más altos de prima frente a las mujeres?
+
+Proporcionemos una ayuda visual adicional:
+
+### Ejercicio 7.
+
+Construya un box-plot de la variable prima en los fumadores, comparando los sexos. 
+
+### Ejercicio 8.
+
+Encuentre el rango y el rango intercuartílico de los `fumadores`. Para resolver este ejercicio, genere una tabla de resumen de la información.
+
+
+## Análisis de valores de las primas por regiones.
+
+
+Recordemos que los histogramas nos pueden servir para comparar las varibles numéricas en la diferentes categorias de una variable. Esto proporciona una ayuda visual a la comprensión de la información entre categorias. 
+
+
+### Ejercicio 9.
+
+Realice un histograma por cada región. **Hint:** Haga uso de la linea adicional `facet_wrap(~ region)` en su ggplot para obtener una parcela con los histogramas de las 4 regiones.
+
+
+### Ejercicio 10.
+
+Construya una tabla donde se comparen la cantidad, la media, la desviación estrandar, el minimo, el percentil 25, la mediana y el percentil 75 para la variable `prima` discriminada por regiones. Haga los comentarios pertinentes respecto a esta tabla.
+
+
+### Ejercicio 11. 
+
+Realice un box-plot de la variable `prima` comparando las regiones.
+
+No olvidemos nuestro foco, los `fumadores`. Primero determinemos la cantidad de fumadores por region.
+
