@@ -1,0 +1,260 @@
+
+setwd("C:/Users/Nicolas/Desktop/CURSO_FUNDAMENTOS DE ESTAD?STICA PARA ANAL?TICA DE DATOS/Semana 2/Codigos/Estadistica_Exploratoria")
+
+
+library(dplyr)
+library(readxl)
+library(fdth)
+
+### Definir la ruta de los archivos
+### Recuerden seleccionar carpeta darle copiar y pegar entre comillas
+
+
+##########################
+#### Lectura de datos  ###
+##########################
+
+#### Forma incorrecta
+DatEnc <- read_excel("3. Encuesta.xlsx")
+
+### Encabezado de los datos
+head(DatEnc)
+
+#### Estructura interna de la base de datos y las variables
+str(DatEnc)
+
+#### PILAS - Las variables no quedaron bien clasificadas !!!
+windows()
+hist(DatEnc$ingreso)
+mean(DatEnc$directorio)
+
+
+#### Haciendo caracter las variables que lo son
+DatEnc$directorio <- as.character(DatEnc$directorio)
+
+### Para poder extraer las variables de la BD por su nombre
+attach(DatEnc)
+
+#### Estructura interna de la base de datos y las variables 
+#### Para mirar si son categoricas o numericas
+str(DatEnc)
+
+### Para mirar el encabezado de los datos
+head(DatEnc)
+View(DatEnc)
+
+##########################################################
+#### Funci?n para obtener tablas de frecuencias para  ####
+####               variables categ?ricas              ####
+##########################################################
+
+t_frec <- function(x){
+   tf <-cbind(table(x),round(prop.table(table(x))*100,2),cumsum(table(x)),
+              round(cumsum(prop.table(table(x))),4)*100)
+   colnames(tf)<- c("fi","hi(%)","Fi","Hi(%)")
+   return(tf)
+}
+
+### Ejemplo Estrato
+tfrec_est <- t_frec(estrato)
+tfrec_est
+
+### Ejemplo Localidad
+tfrec_loc <-t_frec(localidad)
+tfrec_loc
+
+####################
+##### Gr?ficos #####
+####################
+
+#############################
+#### Diagramas de barras ####
+#############################
+
+#### Ejemplo Estrato ####
+
+# Diagrama de barras - Frec absolutas
+windows()
+grafico1 <- barplot(tfrec_est[,1],main="Estrato",ylab="Conteos",xlab="",
+                    ylim=c(0,7000))
+text(x=grafico1,y=tfrec_est[,1]+140,label=tfrec_est[,1])
+
+# Diagrama de barras - Frec absolutas acumuladas
+windows()
+grafico1 <- barplot(tfrec_est[,3],main="Estrato",ylab="Conteos",
+                    xlab="",ylim=c(0,20000))
+text(x=grafico1,y=tfrec_est[,3]+300,label=tfrec_est[,3])
+
+# Diagrama de barras - Frec relativas
+windows()
+grafico <- barplot(tfrec_est[,2],main="Estrato",ylab="Porcentajes",
+                   xlab="",ylim=c(0,40),col= c("red","blue","yellow","green","purple","pink","lightblue"))
+text(x=grafico,y=tfrec_est[,2]+0.9,label=tfrec_est[,2])
+
+# Diagrama de barras - Frec relativas acumuladas
+windows()
+grafico1 <- barplot(tfrec_est[,4],main="Estrato",ylab="Porcentajes acumulados",
+                    xlab="",ylim=c(0,110))
+text(x=grafico1,y=tfrec_est[,4]+3,label=tfrec_est[,4])
+
+#############################
+####  Diagrama circular  ####
+#############################
+
+library(plotly)
+
+ds <- data.frame(labels = c("1","2","3","4","5","6","9"),
+                 values = tfrec_est[,1])
+
+plot_ly(ds, labels = ds$labels, values = ds$values, type = "pie") %>%
+   layout(title = "Diagrama circular")
+
+#############################
+####  Gr?fico de Pareto  ####
+#############################
+library(qcc)
+
+###### Datos de frec absolutas ejemplo usos del suelo
+uso_pot<-c(1524413,328361,51996,273790,1191,36901,85997)
+names(uso_pot) <- c("Residencial","Parqueadero (res)",
+                    "Dep?sito","Comercial","Parqueadero (com)",
+                    "Lotes","Otros")
+
+### Grafico de Pareto
+windows()
+pareto.chart(uso_pot,main="Gr?fico de Pareto",xlab="",
+             ylab="Conteos",ylab2="Porcentajes acumulados")
+
+
+### Ejemplo Variable - Estrato
+windows()
+pareto.chart(tfrec_est[,1],main="Gr?fico de Pareto",xlab="Estratos",
+             ylab="Conteos",ylab2="Porcentajes acumulados")
+
+
+######################################################
+#### Tabla de frecuencia para datos cuantitativos ####
+######################################################
+
+#### Considere un ejemplo de salarios
+library(fdth)
+
+salarios<-c(1.6, 1.9, 2.2, 2.5, 2.6, 2.6, 2.9, 3.0,
+            3.0, 3.1, 3.1, 3.1,3.1, 3.2, 3.2, 3.2, 3.3, 3.3,
+            3.3, 3.4, 3.4, 3.4, 3.5, 3.5, 3.6,3.7, 3.7, 3.7,
+            3.8, 3.8, 3.9, 3.9, 4.1, 4.1, 4.2, 4.3, 4.4, 4.5,
+            4.7, 4.7)
+
+######## Ejemplo Variable Salarios
+
+tab_dist_sal <- fdt(salarios,breaks="Sturges",right=F)
+tab_dist_sal
+
+######## Ejemplo Variable Ingreso - Encuesta
+
+tab_dist_frec <- fdt(sort(ingreso)[1:14800],breaks="Sturges")
+tab_dist_frec
+
+########################################
+##### Gr?ficos variables continuas #####
+########################################
+
+#####################
+#### Histogramas ####
+#####################
+
+# Histograma de frecuencias absolutas
+plot(tab_dist_sal,type='fh',main="Histograma de frecuencias absolutas",
+     xlab="Ingresos",ylab="Conteos",col="red")   
+
+# Histograma de frecuencias relativas(%) 
+plot(tab_dist_sal,type='rfph',main="Histograma de frecuencias relativas (%)",
+     xlab="Ingresos",ylab="Porcentaje",col="red")     
+
+# Histograma de frecuencias absolutas acumuladas
+plot(tab_dist_sal,type='cfh',main="Histograma de frecuencias absolutas acumuladas",
+     xlab="Ingresos",ylab="Conteos",col="red")  
+
+# Histograma de frecuencias relativas acumuladas(%) 
+plot(tab_dist_sal,type='cfph',main="Histograma de frecuencias relativas acumuladas",
+     xlab="Ingresos",ylab="Porcentaje",col="red")   
+
+#####################
+####  Poligonos  ####
+#####################
+
+# Poligonos de frecuencias absolutas
+
+plot(tab_dist_sal,type='fp',main="Poligono de frecuencias absolutas",
+     xlab="Ingresos",ylab="Conteos",col="black",lwd=2) 
+
+# Poligonos de frecuencias relativas (%)
+
+plot(tab_dist_sal,type='rfpp',main="Poligono de frecuencias relativas (%)",
+     xlab="Ingresos",ylab="Porcentaje",col="black",lwd=2) 
+
+# Poligono de frecuencias absolutas acumuladas
+
+plot(tab_dist_sal,type='cfp',main="Poligono de frecuencias absolutas acumuladas",
+     xlab="Ingresos",ylab="Conteos",col="black",lwd=2) 
+
+# Poligono de frecuencias relativas (%)
+
+plot(tab_dist_sal,type='cfpp',main="Poligono de frecuencias relativas acumuladas(%)",
+     xlab="Ingresos",ylab="Porcentaje",col="black",lwd=2) 
+
+###########################################
+#####  Medidas num?ricas descriptivas  ####
+###########################################
+
+#### Con el comando summary se puede estimar el promedio
+#### la mediana y los cuartiles simultaneamente
+
+summary(ingreso)
+
+#### Con el comando quantile se puede estimar cualquier percentil
+#### Por ejemplo, los percentiles 10, 33 y 71 de la variable ingreso
+
+quantile(ingreso,probs=c(0.1,0.33,0.71))
+
+##### Medidas de variaci?n
+# RANGO:
+rango<-max(ingreso)-min(ingreso)
+rango
+
+# El rango intercuartil:
+IQR(ingreso)
+
+# El rango semiintercuartil:
+IQR(ingreso)/2
+
+# Varianza:
+var(ingreso)
+
+# La desviaci?n est?ndar:
+sd(ingreso)
+
+# El coeficiente de variaci?n:
+coef_var<-(sd(ingreso)/mean(ingreso))*100
+coef_var
+
+##################################################################
+##### Tablas contingencia #####
+##################################################################
+
+###### Tabla de frecuencias absolutas
+
+tabla_cont <- ftable(localidad,estrato)
+tabla_cont 
+
+#### Tabla de frecuencias relativas - Porcentaje total
+prop_total <- round(prop.table(tabla_cont)*100,2)
+prop_total
+
+#### Tabla de frecuencias relativas - Porcentaje perfil fila
+perfil_fila <- round(prop.table(tabla_cont,1)*100,2)
+perfil_fila
+
+#### Tabla de frecuencias relativas - Porcentaje perfil columna
+perfil_col <- round(prop.table(tabla_cont,2)*100,2)
+perfil_col
