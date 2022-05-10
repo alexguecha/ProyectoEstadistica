@@ -1,0 +1,6 @@
+"0",""
+"0",""
+"0",""
+"0",""
+"0","plot_ly(Dotabla4, labels = Dotabla4[,1], values = Dotabla4[,3], type = ""pie"") %>%"
+"0","  layout(title = ""Diagrama de sectores por Departamento"")"

@@ -1,0 +1,4 @@
+"0",""
+"0",""
+"0","plot_ly(GEtabla4, labels = GEtabla4[,1], values = GEtabla4[,3], type = ""pie"") %>%"
+"0","  layout(title = ""Diagrama de sectores por Grupo de Edad"")"

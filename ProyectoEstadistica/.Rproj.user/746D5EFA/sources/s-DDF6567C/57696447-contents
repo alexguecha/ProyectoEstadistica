@@ -1,0 +1,521 @@
+## Aquí cargamos todas las librerias que se utilizarán en el proceso
+
+library(readxl)
+library(ggplot2)
+library(dplyr)
+library(fBasics)
+library(MASS)
+library(corrgram)
+library(gclus)
+library(descr)
+library(GGally)
+library(agricolae)
+
+## Aqui empieza el trabajo 
+
+
+BDa2censo <- read_excel("~/maestria analitica de datos/Estadistica/Proyecto General/Base de datos inversionistas depurada v3.xlsx", 
+                                                       sheet = "BDInversionistas", col_types = c("text", 
+                                                                                                 "text", "text", "text", "text", "text", 
+                                                                                                 "text", "text", "text", "text", "text", 
+                                                                                                 "text", "numeric", "numeric", "text", 
+                                                                                                 "text", "date", "numeric", "text", 
+                                                                                                 "text", "numeric", "text", "text", 
+                                                                                                 "date", "text", "text", "text", "numeric", 
+                                                                                                 "text"))
+View(BDa2censo)
+
+# La siguiente lista corresponde al diccionario en donde se encuentra la definición de las varibles 
+
+##VARIABLES CUALITATIVAS 
+
+# Sector Campaña: Corresponde a una categorización manual realizada con base en el sector económico al que pertenece la empresa que obtuvo financiación en a2censo
+# calidad tributaria:
+# PaiS
+# Sector Económico
+# tipo Inversionista
+# Propósito de inversión:
+
+#VARIABLES CUANTITATIVAS
+
+#ingresos Mes:
+# Patrimonio
+# Monto de inversión
+# Edad:
+# Cantidad de inversiones
+
+# OTRAS POSIBLES VARIABLES DE INTERÉS
+
+# Grupo Ingresos
+# Grupo Edad
+
+str(BDa2censo)
+
+## 1. Resumen univariado Cualitativas - Estadisticas descriptivas básicas variables cualitativas
+
+
+SectorEcon= BDa2censo$SectorCampaña
+SEtabla=data.frame(table(SectorEcon))
+porcentaje=prop.table(SEtabla[,2])
+SEtabla2= cbind(SEtabla, porcentaje)
+cum_frequencia=cumsum(SEtabla2[,2])
+SEtabla3= cbind(SEtabla2, cum_frequencia)
+cum_porcentaje=cumsum(SEtabla3[,3])
+SEtabla4= cbind(SEtabla3, cum_porcentaje)
+SortSEtabla4 = SEtabla4[order(SEtabla4$Freq), ]
+SortSEtabla4
+
+
+ggplot(SortSEtabla4, aes(x=SectorEcon, y=Freq)) + 
+  geom_bar(stat = "identity") +
+  coord_flip()
+
+###Podemos observar que de manera general las campañas de sectores economicos de tecnología , servicios alimenticios, salud, energías y comercio fueron las que mayor traccion de cantidad de inversionistas generaron
+
+
+Calidadtr= BDa2censo$CalidadTributaria
+CTtabla=data.frame(table(Calidadtr))
+porcentaje=prop.table(CTtabla[,2])
+CTtabla2= cbind(CTtabla, porcentaje)
+cum_frequencia=cumsum(CTtabla2[,2])
+CTtabla3= cbind(CTtabla2, cum_frequencia)
+cum_porcentaje=cumsum(CTtabla3[,3])
+CTtabla4= cbind(CTtabla3, cum_porcentaje)
+SortCTtabla4 = CTtabla4[order(CTtabla4$Freq), ]
+SortCTtabla4
+
+ggplot(SortCTtabla4, aes(x=Calidadtr, y=Freq)) + 
+  geom_bar(stat = "identity") +
+  coord_flip()
+
+####Conclusion
+
+Ciudad= BDa2censo$Ciudad
+Ctabla=data.frame(table(Ciudad))
+porcentaje=prop.table(Ctabla[,2])
+Ctabla2= cbind(Ctabla, porcentaje)
+cum_frequencia=cumsum(Ctabla2[,2])
+Ctabla3= cbind(Ctabla2, cum_frequencia)
+cum_porcentaje=cumsum(Ctabla3[,3])
+Ctabla4= cbind(Ctabla3, cum_porcentaje)
+SortCtabla4 = Ctabla4[order(Ctabla4$Freq), ]
+SortCtabla4
+
+ggplot(SortCtabla4, aes(x=Ciudad , y=Freq)) + 
+  geom_bar(stat = "identity") +
+  coord_flip()
+
+####Conclusion
+
+SEI= BDa2censo$SectorEconomico
+SEItabla=data.frame(table(SEI))
+porcentaje=prop.table(SEItabla[,2])
+SEItabla2= cbind(SEItabla, porcentaje)
+cum_frequencia=cumsum(SEItabla2[,2])
+SEItabla3= cbind(SEItabla2, cum_frequencia)
+cum_porcentaje=cumsum(SEItabla3[,3])
+SEItabla4= cbind(SEItabla3, cum_porcentaje)
+SortSEItabla4 = SEItabla4[order(SEItabla4$Freq), ]
+SortSEItabla4
+
+
+ggplot(SortSEItabla4, aes(x=SEI , y=Freq)) + 
+  geom_bar(stat = "identity") +
+  coord_flip()
+
+####Conclusion
+
+IR= BDa2censo$CodEsInversionistaRecurrente
+IRtabla=data.frame(table(IR))
+porcentaje=prop.table(IRtabla[,2])
+IRtabla2= cbind(IRtabla, porcentaje)
+cum_frequencia=cumsum(IRtabla2[,2])
+IRtabla3= cbind(IRtabla2, cum_frequencia)
+cum_porcentaje=cumsum(IRtabla3[,3])
+IRtabla4= cbind(IRtabla3, cum_porcentaje)
+SortIRtabla4 = IRtabla4[order(IRtabla4$Freq), ]
+SortIRtabla4
+
+ggplot(SortIRtabla4, aes(x=IR , y=Freq)) + 
+  geom_bar(stat = "identity") +
+  coord_flip()
+
+####Conclusion
+
+Edad= BDa2censo$GrupoEdad
+Etabla=data.frame(table(Edad))
+porcentaje=prop.table(Etabla[,2])
+Etabla2= cbind(Etabla, porcentaje)
+cum_frequencia=cumsum(Etabla2[,2])
+Etabla3= cbind(Etabla2, cum_frequencia)
+cum_porcentaje=cumsum(Etabla3[,3])
+Etabla4= cbind(Etabla3, cum_porcentaje)
+SortEtabla4 = Etabla4[order(Etabla4$Freq), ]
+SortEtabla4
+
+ggplot(SortEtabla4, aes(x=Edad , y=Freq)) + 
+  geom_bar(stat = "identity") +
+  coord_flip()
+
+
+####Conclusion
+
+Ingresos= BDa2censo$GrupoIngresos
+Itabla=data.frame(table(Ingresos))
+porcentaje=prop.table(Itabla[,2])
+Itabla2= cbind(Itabla, porcentaje)
+cum_frequencia=cumsum(Itabla2[,2])
+Itabla3= cbind(Itabla2, cum_frequencia)
+cum_porcentaje=cumsum(Itabla3[,3])
+Itabla4= cbind(Itabla3, cum_porcentaje)
+SortItabla4 = Itabla4[order(Itabla4$Freq), ]
+SortItabla4
+
+ggplot(SortItabla4, aes(x=Ingresos , y=Freq)) + 
+  geom_bar(stat = "identity") +
+  coord_flip()
+
+####Conclusion
+
+Propo= BDa2censo$Propósito
+Ptabla=data.frame(table(Propo))
+porcentaje=prop.table(Ptabla[,2])
+Ptabla2= cbind(Ptabla, porcentaje)
+cum_frequencia=cumsum(Ptabla2[,2])
+Ptabla3= cbind(Ptabla2, cum_frequencia)
+cum_porcentaje=cumsum(Ptabla3[,3])
+Ptabla4= cbind(Ptabla3, cum_porcentaje)
+SortPtabla4 = Ptabla4[order(Ptabla4$Freq), ]
+SortPtabla4
+
+ggplot(SortPtabla4, aes(x=Propo , y=Freq)) + 
+  geom_bar(stat = "identity") +
+  coord_flip()
+
+
+
+## 3. Resumen univariado Cuantitativas -  Estadisticas descriptivas básicas Variables cuantitativas 
+
+summary(BDa2censo$IngresosMes)
+
+summary(BDa2censo$Edad)
+
+summary(BDa2censo$Patrimonio)
+
+summary(BDa2censo$MontoInversion)
+
+summary(BDa2censo$CantidadInversiones)
+
+
+#=======================================================
+
+basicStats(BDa2censo$IngresosMes)
+
+basicStats(BDa2censo$Edad)
+
+basicStats(BDa2censo$Patrimonio)
+
+basicStats(BDa2censo$MontoInversion)
+
+basicStats(BDa2censo$CantidadInversiones)
+
+#=======================================================
+
+#meter diagrama de bigotes de una sola variable.
+
+ggplot(data = BDa2censo, mapping = aes(y = Edad)) + geom_boxplot()
+
+ggplot(data = BDa2censo, mapping = aes(y = MontoInversion)) + geom_boxplot()
+
+
+#ANALIS BIVARIADO Cualitativo
+
+#Visualización de las variables cualitativas desde la perspectiva de grupo de ingresos
+
+
+ggplot(BDa2censo,aes(x=BDa2censo$SectorCampaña,)) + geom_bar(aes(fill= BDa2censo$GrupoIngresos)) + coord_flip() + theme_classic()
+
+#A partir del anterior grafico podemos observar la concentración de inversionistas con ingresos superiores a 10M de pesos en sectores económicos de tecnología y servicios alimenticios, en los cuales la pacticipacion de personas con ingresos entre 3M y 5M también es relevante.
+# Resulta interesante observar que en general las empresas financiadas en a2censo que pertenecen al sector de tecnologíam Servicios alimenticios , salus y energías, demuestran mayor traccion de inversionistas de alto capital y medio-bajo capital caraterizandose por tener inversionistas con ingresos superiories a 10 millones, y entre 3 y 5 MM
+
+
+ggplot(BDa2censo,aes(x=BDa2censo$CalidadTributaria,)) + geom_bar(aes(fill= BDa2censo$GrupoIngresos)) + coord_flip() + theme_classic()
+
+# No veo nada que concluir de esta
+
+ggplot(BDa2censo,aes(x=BDa2censo$Departamento,)) + geom_bar(aes(fill= BDa2censo$GrupoIngresos)) + coord_flip() + theme_classic()
+
+# Lejos de encontrar relevante sacar alguna conclusión de acuerdo al rango de ingresos, de manera general podemos observar que departamentos como valle del cauca, Santander, Antioquia son regiones potenciales para atracción de inversionistas en donde a2censo no ha tenido una alta participacion a nivel de marketing o acercamiento con inversionistas
+
+
+ggplot(BDa2censo,aes(x=BDa2censo$CodEsInversionistaRecurrente,)) + geom_bar(aes(fill= BDa2censo$GrupoIngresos)) + coord_flip() + theme_classic()
+# De acuerdo a la anterior grafica podemos observar como los inversionistas recurrentes (Cod 1) son en mayor medida personas con ingresos superiores a 10 M, aun cuando hay una proporsion importante de inversionistas recurrentes con ingresos entre 3M y 5M que no son necesariamente de un alto rango de ingresos y aun asi estan viendo una oportunidad recurrente de invertir en el mercado
+#En el caso de los inversionistas no recurrentes podemos encotnrar como una importante proporsion de inversionistas son personas con ingresos entre 1 M a 5 M
+
+ggplot(BDa2censo,aes(x=BDa2censo$GrupoEdad,)) + geom_bar(aes(fill= BDa2censo$GrupoIngresos)) + coord_flip() + theme_classic()
+
+#Realizando un analisis bivariado entre el grupo de edad y el rango de ingresos resulta interesante observar la participacion que tienen personas entre rangos de edad de 25 a 35 con ingresos entre 1 a 5 millones de pesos los cuales representan un volumen importante, no obstante volumenes similares se observan el personas con edades entre 35 y 45 años suelen ser en mauor medida personas con ingresos superiores a 10 millones de pesos
+
+
+
+#Visualización de las variables cualitativas desde la perspectiva de grupo de edad
+
+ggplot(BDa2censo,aes(x=BDa2censo$SectorCampaña,)) + geom_bar(aes(fill= BDa2censo$GrupoEdad)) + coord_flip() + theme_classic()
+
+#Podemos observar que de manera general independiente al sector economico de la empresa financiada, los grupos poblacionales que más invierten en a2censo se encuentran entre 25 y 45 años , no obstante se observa una interesante participación de personas mayores de 65 años en las campañas de tecnología , servicios alimenticios y salud
+
+ggplot(BDa2censo,aes(x=BDa2censo$CalidadTributaria,)) + geom_bar(aes(fill= BDa2censo$GrupoEdad)) + coord_flip() + theme_classic()
+
+#Calidad tributaria no tiene mayor analisis
+
+ggplot(BDa2censo,aes(x=BDa2censo$Departamento,)) + geom_bar(aes(fill= BDa2censo$GrupoEdad)) + coord_flip() + theme_classic()
+
+# No es el grupo poblacional mas grande dentro de la comunidad de inversionistas, no obstante puede ser un grupo de atención las personas entre 45 y 55 años los cuales siguen presentes en antioquia, valle del cauca
+
+
+
+ggplot(BDa2censo,aes(x=BDa2censo$CodEsInversionistaRecurrente,)) + geom_bar(aes(fill= BDa2censo$GrupoEdad)) + coord_flip() + theme_classic()
+
+#Del anterior grafico podemos concluir que para el caso de los inversionistas recurrentes hay una leve proporsion mayor de inversionistas en rangos de edades entre 35 y 45 años mientras que esta proporsion mayor de inversionistas no recurrentes de centra en personas entre 25 y 35 años, aun cuando ambos grupos de edades son predominantes estos dos grupos de edades
+
+
+
+#Visualización de las variables cualitativas desde la perspectiva de inversionista recurrente
+
+ggplot(BDa2censo,aes(x=BDa2censo$SectorCampaña,)) + geom_bar(aes(fill= BDa2censo$CodEsInversionistaRecurrente)) + coord_flip() + theme_classic()
+
+# De manera general se puede observar que la cantidad de inversionistas NO recurrentes es mayor para todos los sectores economicos de las empresas financiadas, es una distribución muy acorde al numero de inversionistas sin considerar si es recurrente o no
+
+ggplot(BDa2censo,aes(x=BDa2censo$CalidadTributaria,)) + geom_bar(aes(fill= BDa2censo$CodEsInversionistaRecurrente)) + coord_flip() + theme_classic()
+
+# No hay nada que concluir con esta variable
+
+ggplot(BDa2censo,aes(x=BDa2censo$Departamento,)) + geom_bar(aes(fill= BDa2censo$CodEsInversionistaRecurrente)) + coord_flip() + theme_classic()
+
+
+ggplot(BDa2censo,aes(x=BDa2censo$GrupoEdad,)) + geom_bar(aes(fill= BDa2censo$CodEsInversionistaRecurrente)) + coord_flip() + theme_classic()
+
+# De la anterior grafica resulta interesante observar que actualmente la cantidad de inversionistas recurrentes son mas en personas entre 35 y 45 años y son aun mas en cantidad respecto a personas entre 25 y 35 años, en donde podemos observar que para este rango de edad entre 25 y 35 años la mayor cantidad de inversionistas son no recurrentes
+
+
+## 2. Resumen Bivariado Cualitativas y cuantitativas
+
+
+#Capitulo 1: Analisis de las variables desde el monto invertido
+
+ggplot(data = BDa2censo, mapping = aes(x =  MontoInversion , y = GrupoIngresos)) + geom_boxplot()
+
+# Del anterior diagrama de cajas y bigotes podemos concluir que aunque desde la correlacion lineal simple no se encuentra correlacion dada la alta dispersion de los datos que se tienen, a nivel del analisis de la media del monto invertido parece comportarse de manera acorde al rango de ingresos en donde podemos observar que a mayor rango de ingresos la media va incrementando proporsionalmente ( Ojo que no es un dato conclusivo para todos los datos con un buen ajuste, si no un analisis desde medida de tendencia central)
+
+ggplot(data = BDa2censo, mapping = aes(x =  IngresosMes , y = GrupoIngresos)) + geom_boxplot()
+
+# De manera similar al anterior grafico podemos encontrar que a) la mayor dispersión de datos respecto a ingresos mes se encuentra en las personas con ingresos superiores a 10 millones de pesos, no obstante desde el analisis de medidas de tendencia central y dispersión podemos observar menores desviaciones estandar en lo que respecto a ingresos menores a 10 millones de pesos
+
+
+ggplot(data = BDa2censo, mapping = aes(x =  Patrimonio , y = GrupoIngresos)) + geom_boxplot()
+
+#De manera similar, la medida de tendencia central es acorde a la conclusión de que un mayor promedio de patrimonio reportado es acorde a un mayor rango de ingresos, no obstante la dispersión no permitiría generalizar esta observación para todos los sujetos encontrandose sujetos con alto patrimonio en ingresos entre 1 y 3 millones
+
+ggplot(data = BDa2censo, mapping = aes(x =  Edad , y = GrupoIngresos)) + geom_boxplot()
+
+#De acuerdo con el comportamiento que muchas veces se ha observado en las estadisticas Nacionales podemos observar que a mayor edad el promedio de ingresos es mayor encontrandose que el promedio de edad de nuestros inversionistas se encuentra en mayor medida entre los 30 y 40 ños
+
+ggplot(data = BDa2censo, mapping = aes(x =  CantidadInversiones , y = GrupoIngresos)) + geom_boxplot()
+
+#Si bien hay outliers en todos los rangos de ingresos, desde la tendencia central podemos ver que el mayor foco de inversionistas recurrentes se encuentra en personas con ingresos entre 5 a 10 millones de pesos
+
+#===================================================
+
+#Capitulo 2 - Analisis desde el tipo de inversionista (Recurrente o no Recurrente)
+
+ggplot(data = BDa2censo, mapping = aes(x =  MontoInversion , y = CodEsInversionistaRecurrente)) + geom_boxplot()
+
+#Desde el promedio podemos concluir que los inversionistas NO recurrentes pueden llegar a invertir montos sutilmente mayores, no obtante la dispersión de los datos no permite encontrar dicha relacion
+
+ggplot(data = BDa2censo, mapping = aes(x =  IngresosMes , y = CodEsInversionistaRecurrente)) + geom_boxplot()
+
+#Los inversionistas recurrentes pueden llegar a tener un promedio de ingresos levemente mayor a los inversionistas no recurrentes
+
+ggplot(data = BDa2censo, mapping = aes(x =  Patrimonio , y = CodEsInversionistaRecurrente)) + geom_boxplot()
+
+# Los inversionistas Recurrentes llegan a tener un promedio de patrimonio levemente superior, aun cuando hay personas consideradas inversionistas no recurrentes con un muy alto nivel de patrimonio
+
+ggplot(data = BDa2censo, mapping = aes(x =  Edad , y = CodEsInversionistaRecurrente)) + geom_boxplot()
+
+# Los inversionistas recurrentes tiene un promedio de edad mayor, lo cual puede estar asociado con la siguiente grafica en donde observamos que en este rango de edad dichas inversiones recurrentes pueden estar asociadas con propositos de inversión como diversificar portafolio, aprender de financiación o sencillamente rentabilidad
+
+ggplot(data = BDa2censo, mapping = aes(x =  Edad , y = Propósito)) + geom_boxplot()
+
+#Aqui podemos observar que personas que quieren hacer parte de la comunidad como proposito de inversión tienen una media superior de edad sin tanta desviacion desde los datos
+
+ggplot(data = BDa2censo, mapping = aes(x =  CantidadInversiones , y = CodEsInversionistaRecurrente)) + geom_boxplot()
+
+#Aqui un grafico que nos habla del promedio de inversiones para un inversionista recurrente ronda las 20 inversiones con algunos individuos que han invertido mas de 60 veces
+#===================================================
+
+ggplot(BDa2censo, aes(Propósito, GrupoEdad, fill= MontoInversion)) + geom_tile() +
+  scale_fill_gradient(low="white", high="blue") + theme(text = element_text(size=9), axis.text.x = element_text(angle=90, hjust=1))
+
+
+#Del anterior grafico podemos observar como personas entre 35 y 45 años con un mayor monto invertido tienen asociado un propósito de diversificación en sus inversiones lo cual puede ser una gran oportunidad en segmentación de la comunicación
+
+
+ggplot(BDa2censo, aes(Propósito, GrupoEdad, fill= CantidadInversiones)) + geom_tile() +
+  scale_fill_gradient(low="white", high="red") + theme(text = element_text(size=9), axis.text.x = element_text(angle=90, hjust=1))
+# de Igual forma a como se habia mencionado anteriormente resulta interesante observar el grupo poblacional de personas mayores a 45 años con mayor recurrencia de inversión y que tienen un propósito de aprendizaje en temas de financiación, una oportunidad desde el acompañamiento que se le puede dar a este grupo en terminos de educación
+
+ggplot(BDa2censo, aes(Propósito, SectorCampaña , fill= CantidadInversiones)) + geom_tile() +
+  scale_fill_gradient(low="white", high="red") + theme(text = element_text(size=9), axis.text.x = element_text(angle=90, hjust=1))
+
+# Despues de haber visto que el sector económico de educación no tuvo tanta tracción en numero de inversionistas totales pero al verlo aqui desde el comportamiento de inversiones recurrentes, resulta interesante poder profundizar con inversionistas el porque se suele invertir de manera más recurrente por un solo inversionista en campañas de este sector.
+#Igualmente llama la atención la cantidad de inversiones recurrentes que reciben sectores economicos como Entretenimiento con propositos de aprendizaje de financiación que como vimos anteriormente estan relacionadas con personas de mas de 45 años
+
+ggplot(BDa2censo, aes(GrupoIngresos, GrupoEdad, fill= MontoInversion)) + geom_tile() +
+  scale_fill_gradient(low="white", high="blue") + theme(text = element_text(size=9), axis.text.x = element_text(angle=90, hjust=1))
+
+# En este grafico podemos contestar a uno de los objetivos de la investigación de cara a la segmentación de los inversionistas de a2censo de cara a llevarlos a otros productos de mayor costo y complejidad, de acuerdo a lo anterior podemos concluir que personas entre 25 y 35 años (Milennials de ingreso medio) con ingresos entre 5 y 7MM tienen mayores montos invertidos, de igual forma que los mas viejos con este mismo rango de ingresos (Gen X de ingresos medios). Por otro lado observar que en mayores rangos de ingresos los mayores montos de inversion se concentran en personas entre 35 y 55 años de edad (milennial y late milennials de altos ingresos.)
+
+
+
+
+## 4. Resumen Bivariado Cuantitativas -  Correlaciones Lineales simples, multiples y correlaciones logisticas
+
+
+
+cor(x = BDa2censo$Edad, y = BDa2censo$MontoInversion, method = "pearson")
+
+cor(x = BDa2censo$IngresosMes, y = BDa2censo$MontoInversion, method = "pearson")
+
+cor(x = BDa2censo$Patrimonio, y = BDa2censo$MontoInversion, method = "pearson")
+
+cor(x = BDa2censo$CantidadInversiones, y = BDa2censo$MontoInversion, method = "pearson")
+
+
+#====================================================
+
+cor(x = BDa2censo$Edad, y = BDa2censo$CantidadInversiones, method = "pearson")
+
+cor(x = BDa2censo$IngresosMes, y = BDa2censo$CantidadInversiones, method = "pearson")
+
+cor(x = BDa2censo$Patrimonio, y = BDa2censo$CantidadInversiones, method = "pearson")
+
+cor(x = BDa2censo$MontoInversion, y = BDa2censo$CantidadInversiones, method = "pearson")
+
+
+
+corrgram(BDa2censo, order=TRUE, lower.panel=panel.shade,
+         upper.panel=panel.pie, text.panel=panel.txt,
+         main="Matriz de Correlaciones General")
+
+
+#Segun la anterior matriz podemos evidenciar que aparentemente las unicas variables que muestran un nivel de correlacion posiblemente significativo son la variable Edad y numero de inversiones y  la edad y el monto de inversión, encontrandose que posiblemente hay clusters dado por la edad que se relacionan con el perfil de inversionista
+
+## Analisis del modelo de regresión lineal incluyendo todas las variables
+
+modelotest <- lm(MontoInversion ~ CantidadInversiones + Edad + IngresosMes + MontoInversion + Patrimonio, data = BDa2censo )
+
+summary(modelotest)
+
+Predicciones1<-modelotest$fitted.values
+
+library(ggplot2)
+ggplot(data = BDa2censo, aes(x = predict(modelotest), 
+                        y = abs(rstudent(modelotest))))+
+  geom_hline(yintercept = 3, color = "grey", linetype = "dashed")+
+  geom_point(aes(color = ifelse(abs(rstudent(modelotest)) > 2, "red", "black")))+
+  scale_color_identity()+
+  labs(title = "DistribuciÃ³n de los residuos estudentizados", 
+       x = "PredicciÃ³n modelo", 
+       y = "Residuos estudentizados")+
+  theme_bw() + theme(plot.title = element_text(hjust = 0.5))
+
+
+## Analisis de modelo de regresión incluyendo solo las variables que demostraron aportar información al modelo general
+
+
+step(object = modelotest, direction = "both", trace = 1)  ## calculo de criterio de perdida de info
+
+modeloDef <- lm(MontoInversion ~ Edad ,data = BDa2censo )
+
+summary(modeloDef)
+
+
+PrediccionesDef<-modeloDef$fitted.values
+
+ggplot(data = BDa2censo, aes(x = predict(modeloDef), 
+                        y = abs(rstudent(modeloDef))))+
+  geom_hline(yintercept = 3, linetype = "dashed")+
+  geom_point(aes(color = ifelse(abs(rstudent(modeloDef)) > 2, "red", "black")))+
+  scale_color_identity()+
+  labs(title = "DistribuciÃ³n de los residuos estudentizados", 
+       x = "PredicciÃ³n modelo", 
+       y = "Residuos estudentizados")+
+  theme_bw() + theme(plot.title = element_text(hjust = 0.5))
+
+# Predicciones
+
+Y_dataset=BDa2censo$Edad
+Y_modelad=Predicciones
+Comparativo=cbind(Y_dataset, Y_modelad)
+Comparativo
+
+Diferecias=Y_dataset-Y_modelad
+Errores=cbind(Comparativo, Diferecias)
+Errores
+
+
+#==========
+  
+BDa2censo$CodEsInversionistaRecurrente<-as.factor(BDa2censo$CodEsInversionistaRecurrente)
+BDa2censo$SectorCampaña<-as.factor(BDa2censo$SectorCampaña)
+BDa2censo$CalidadTributaria<-as.factor(BDa2censo$CalidadTributaria)
+BDa2censo$Propósito<-as.factor(BDa2censo$Propósito)
+
+
+
+library(caTools)
+
+set.seed(88)
+split <- sample.split(BDa2censo$CodEsInversionistaRecurrente, SplitRatio = 0.75)
+split 
+training <- subset(BDa2censo,split =="TRUE")
+testing <- subset(BDa2censo,split=="FALSE")
+
+
+logMultiple=glm(BDa2censo=training,CodEsInversionistaRecurrente~MontoInversion+Edad+IngresosMes+Patrimonio+SectorCampaña+CalidadTributaria, family = binomial)
+summary(logMultiple)
+str(BDa2censo)
+
+logMultiple2=glm(BDa2censo=training,CodEsInversionistaRecurrente~MontoInversion+Edad+IngresosMes+Patrimonio, family = binomial)
+summary(logMultiple2)
+
+logMultiple3=glm(BDa2censo=training,CodEsInversionistaRecurrente~MontoInversion+Edad+IngresosMes+Patrimonio+Propósito, family = binomial)
+summary(logMultiple3)
+
+logMultiple4=glm(BDa2censo=training,CodEsInversionistaRecurrente~MontoInversion+Edad+IngresosMes+Patrimonio+SectorCampaña+Propósito+CalidadTributaria, family = binomial)
+summary(logMultiple4)
+
+names(BDa2censo)
+str(BDa2censo$CantidadInversiones) # con cantidad de inversiones no converge , debe haber erroe en la BDa2censo
+
+
+### PREDICCIONES
+
+res <- predict(logMultiple4, training,type = 'response')
+
+### matriz de confusion 
+
+Matriz_Conf<-table(Predicción=res>0.5, Real=training$CodEsInversionistaRecurrente )
+Matriz_Conf
+
+## acuraccy
+(Matriz_Conf[[1,1]]+Matriz_Conf[[2,2]])/sum(Matriz_Conf)
+
+
+## Corva ROC
+
+library(ROCR)
+ROCRpred = prediction(res, training$CodEsInversionistaRecurrente)
+ROCRperf <- performance(ROCRpred, 'tpr','fpr')
+plot(ROCRperf, colorize = TRUE, print.cutoffs.at=seq(0.1,by=0.1)) #text.adj = c(-0.2,1.7)
+

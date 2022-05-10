@@ -1,0 +1,71 @@
+---
+title: 'Crowfunding en el Mercado de Capitales Colombiano - Proyecto de Estadística para la Analítica de Datos'
+author: "Sergio Castañeda, Guillermo Castillo, Alexander Guecha"
+date: "24/04/2022"
+output:
+  word_document: default
+  pdf_document: default
+  
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T)
+
+library(readxl)
+library(ggplot2)
+library(dplyr)
+library(fBasics)
+library(MASS)
+library(corrgram)
+library(gclus)
+library(descr)
+library(GGally)
+library(agricolae)
+library(plotly)
+library(fdth)
+
+```
+
+```{r}
+
+
+BDa2censo <- read_excel("Base de datos inversionistas depurada v3.xlsx", 
+    col_types = c("text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "numeric", 
+        "numeric", "text", "text", "date", 
+        "numeric", "text", "text", "numeric", 
+        "text", "text", "date", "text", "text", 
+        "text", "numeric", "text"))
+#View(BDa2censo)
+
+```
+
+# ANÁLISIS ESTADÍSTICO BASE DE DATOS INVERSIONISTAS DE A2CENSO 
+
+## Resumen univariado de variables cualitativas
+
+### Variable 1: SectorCampaña
+
+
+```{r}
+SectorCampaña_= BDa2censo$SectorCampaña
+SCtabla=data.frame(table(SectorCampaña_))
+porcentaje=prop.table(SCtabla[,2])
+SCtabla2= cbind(SCtabla, porcentaje)
+cum_frequencia=cumsum(SCtabla2[,2])
+SCtabla3= cbind(SCtabla2, cum_frequencia)
+cum_porcentaje=cumsum(SCtabla3[,3])
+SCtabla4= cbind(SCtabla3, cum_porcentaje)
+
+knitr::kable(
+  (SCtabla4)
+)
+
+barplot(table(BDa2censo$SectorCampaña), col = "blue", main="Diagrama de barras variable Sector Campaña",ylim=c(0,5000),las=2, cex.names = 0.7, lwd = 1.5, cex.axis=0.9 ,  ylab = "Conteos")
+
+
+
+
+
+```
+
