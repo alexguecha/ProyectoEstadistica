@@ -1,0 +1,260 @@
+#############################################
+### Agenda:                                ##
+#############################################
+### 1. Repaso                              ##
+### 2. Tipos de variables y gr?ficos       ##
+###    para tipos de variable              ##  
+### 3. Exploraci?n de datos categoricos    ##
+### 4. Gr?ficos para UNA variable          ##
+###    categ?rica                          ##
+### 5. Gr?ficos para DOS variables         ##
+###    categ?ricas                         ##
+#############################################
+  
+
+#############################################
+
+# Activar paquetes
+# (SE DEBE HACER CADA VEZ QUE SE INICIA R)
+library(tidyverse)
+
+##############################################
+### Fijar directorio de trabajo ##############
+##############################################
+
+getwd()
+
+# (SE RECOMIENDA HACER CADA VEZ QUE SE INICIA R)
+
+# Control + Shift + H
+
+setwd("C:/Users/Nicolas/Desktop/CURSO_FUNDAMENTOS DE ESTAD?STICA PARA ANAL?TICA DE DATOS/Semana 3_Probabilidad")
+
+getwd()
+
+##############################################
+### Importar datos ###########################
+##############################################
+### 1. Prueba Saber11 2019-2
+saber11_2019 <- read_csv("saber11_2019.csv")
+
+
+### 2. Datos Covid - 19 Colombia
+  covid_colombia <- read_csv("https://www.datos.gov.co/api/views/gt2j-8ykr/rows.csv?accessType=DOWNLOAD")
+
+##############################################
+### Variables y tipos de gr?ficos ############
+##############################################
+
+##################################################
+### Variables categ?ricas:                      ##
+###   Ej. sexo, afiliaci?n pol?tica,            ##
+###     nivel educativo, estrato socioecon?mico.##
+###   Tipos de gr?ficos:                        ##
+###     Gr?fico de barras y relacionados.       ##
+###     Gr?fico de pastel y relacionados (No recomendado). 
+### Variables cuantitativas:                    ##
+###   Ej. Edad, salario, ingreso, puntajes,     ##
+###     peso, talla, etc.                       ##
+###   Tipos de gr?ficos:                        ##
+###     Histograma                              ##
+###     Pol?gono de frecuencias                 ##
+###     Densidad                                ##
+##################################################
+
+#############################################
+### Recurso muy recomendado:#################
+#############################################
+### https://www.data-to-viz.com ##############
+#############################################
+
+
+##############################################
+### Explorar los datos #######################
+##############################################
+
+head(saber11_2019, n=10)
+tail(saber11_2019)
+dim(saber11_2019)
+ncol(saber11_2019)
+nrow(saber11_2019)
+variables <- names(saber11_2019)
+
+
+head(covid_colombia)
+tail(covid_colombia)
+dim(covid_colombia)
+ncol(covid_colombia)
+nrow(covid_colombia)
+names(covid_colombia)
+
+##############################################
+### Exploraci?n de variables categ?ricas #####
+##############################################
+
+table(saber11_2019$COLE_NATURALEZA)
+prop.table(table(saber11_2019$COLE_NATURALEZA))
+prop.table(table(saber11_2019$COLE_NATURALEZA)) * 100
+
+table(saber11_2019$FAMI_ESTRATOVIVIENDA)
+prop.table(table(saber11_2019$FAMI_ESTRATOVIVIENDA))
+prop.table(table(saber11_2019$FAMI_ESTRATOVIVIENDA)) * 100
+
+table(covid_colombia$Estado)
+prop.table(table(covid_colombia$Estado))
+prop.table(table(covid_colombia$Estado)) * 100
+
+##############################################
+### Geoms ###################################
+##############################################
+
+# Geoms en ggplot son los objetos geom?tricos 
+# usados para representar los datos.
+
+# Ej. geom_point sirve para realizar 
+#  diagramas de dispersi?n.
+
+## https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf
+
+############################################
+## Gr?ficos para una variable categ?rica: ##
+############################################
+
+## Gr?fico de barras
+
+# Variable: COLE_NATURALEZA
+
+ggplot(data = saber11_2019, 
+       mapping = aes(x = COLE_NATURALEZA)) + 
+  geom_bar()
+
+# Algunos atributos esteticos (i.e. aesthetics) de la 
+# gr?fica se pueden modificar?
+?geom_bar
+
+# Modifiquemos el relleno y el color de las lineas
+ggplot(data = saber11_2019, 
+       mapping = aes(x = COLE_NATURALEZA)) + 
+  geom_bar(fill="orange", color = "white", 
+           alpha = 0.8)
+
+## 
+colours()
+# demo("colors")
+
+# Cambiemos el nombre de los ejes:
+
+ggplot(data = saber11_2019, 
+       mapping = aes(x = COLE_NATURALEZA)) + 
+  geom_bar(fill="Darkgreen", color = "Black") +
+  labs(y = "N?mero de estudiantes", 
+       x = "Tipo de colegio")
+
+# Y cambiemos el aspecto general de la gr?fica
+
+ggplot(data = saber11_2019, 
+       mapping = aes(x = COLE_NATURALEZA)) + 
+  geom_bar(fill="Darkgreen", color = "Black") +
+  labs(y = "N?mero de estudiantes", 
+       x = "Tipo de colegio") +
+ theme_classic()
+
+# cambiar el eje y para que muestre
+# la frecuencia relativa?
+
+# https://d33wubrfki0l68.cloudfront.net/70a3b18a1128c785d8676a48c005ee9b6a23cc00/7283c/images/visualization-stat-bar.png
+
+ggplot(data = saber11_2019, 
+       mapping = aes(x = COLE_NATURALEZA, y = stat(prop), 
+                     group = 1)) + 
+  geom_bar(fill="Darkgreen", color = "Black") +
+  labs(y = "N?mero de estudiantes", 
+       x = "Tipo de colegio") +
+  theme_bw()
+
+# Una forma alternativa y equivalente
+
+ggplot(data = saber11_2019, 
+       mapping = aes(x = COLE_NATURALEZA)) + 
+  geom_bar(aes(y = ..count../sum(..count..)), 
+           fill="Darkgreen", color = "Black") +
+  labs(y = "N?mero de estudiantes", 
+       x = "Tipo de colegio") +
+  theme_bw()
+
+# Gr?fico de pastel
+
+# NO LOS USEN: https://www.data-to-viz.com/caveat/pie.html
+
+# Creo una tabla con los datos
+genero <- saber11_2019 %>% 
+  count(ESTU_GENERO) %>% 
+  filter(!is.na(ESTU_GENERO))
+genero
+
+# Alg?n rol cumple stat = "identity"?
+
+ggplot(data = genero, 
+       mapping = aes(x = "", y = n, 
+                     fill = ESTU_GENERO)) + 
+  geom_bar(stat = "identity", width = 1)  + 
+  coord_polar("y", start=0)
+
+# Una mejor alternativa ser? un gr?fico de barras o u
+# un lollipop:
+
+ggplot(data = genero, 
+       mapping = aes(x = ESTU_GENERO, y = n)) + 
+  geom_point() + 
+  geom_segment(aes(x = ESTU_GENERO, 
+                   xend = ESTU_GENERO, 
+                   y = 0, 
+                   yend = n))
+ggplot(data = genero, 
+       mapping = aes(x = ESTU_GENERO, y = n)) + 
+  geom_point() + 
+  geom_segment(aes(x = ESTU_GENERO, 
+                   xend = ESTU_GENERO, 
+                   y = 0, 
+                   yend = n)) +
+  coord_flip()
+
+##############################################
+## Gr?ficos para DOS variables categ?ricas: ##
+##############################################
+
+ggplot(data = saber11_2019, 
+       mapping = aes(x = COLE_AREA_UBICACION, 
+                     fill = DESEMP_INGLES)) +
+ geom_bar()
+
+# Hay tres opciones relevantes para la manera como hace
+# el relleno este tipo de gr?ficas. 
+# stack es la opci?n por defecto
+# Las otras dos son dodge y fill:
+
+ggplot(data = saber11_2019, 
+       mapping = aes(x = COLE_AREA_UBICACION, 
+                     fill = DESEMP_INGLES)) +
+  geom_bar(position = "dodge")
+
+ggplot(data = saber11_2019, 
+       mapping = aes(x = COLE_AREA_UBICACION, 
+                     fill = DESEMP_INGLES)) +
+  geom_bar(position = "fill")
+
+# Por Ultimo, si quiero cambiar la orientaci?n de la gr?fica
+# Puedo usar la capa coord_flip
+
+ggplot(data = saber11_2019, 
+       mapping = aes(x = COLE_AREA_UBICACION, 
+                     fill = DESEMP_INGLES)) +
+  geom_bar(position = "fill") + 
+  coord_flip()
+
+## vignette("ggplot2-specs")
+
+
+
+
+

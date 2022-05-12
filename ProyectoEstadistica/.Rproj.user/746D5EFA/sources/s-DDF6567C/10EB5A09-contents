@@ -1,0 +1,37 @@
+---
+title: "TallerNo3"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r }
+library(caTools)
+data = read.table(file.choose(),sep = ";", head = T)
+
+set.seed(88)
+split <- sample.split(data$covid_res, SplitRatio = 0.75)
+
+```
+
+```{r }
+set.seed(88)
+split <- sample.split(data, SplitRatio = 0.75)
+
+data_train <- subset(data, split == TRUE)
+data_test <- subset(data, split == FALSE)
+
+```
+
+
+```{r }
+# Ajustando el modelo de Regresión Logística:
+model1 <- glm (Status ~ sex + patient_type + intubed + pneumonia + age + pregnancy + diabetes + copd + asthma + inmsupr + hypertension + other_disease + cardiovascular + obesity+ renal_chronic + tobacco + contact_other_covid + icu, data = Estado_train, family = binomial)
+summary(model1)
+predict <- predict(model1, type = 'response')
+predict2 <- as.data.frame(predict(model1, type = 'response'))
+fix(predict2)
+```
+

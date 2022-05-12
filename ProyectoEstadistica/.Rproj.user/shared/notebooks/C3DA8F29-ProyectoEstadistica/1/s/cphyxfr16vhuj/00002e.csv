@@ -1,0 +1,3 @@
+"0",""
+"0","plot(MItabla_st,type='fh',main=""Histograma de frecuencias absolutas variable Monto Inversión"","
+"0","     xlab="" "",ylab=""Conteos"",col=""blue"", las=2)"

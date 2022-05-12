@@ -1,0 +1,296 @@
+## Aquí cargamos todas las librerias que se utilizarán en el proceso
+
+library(readxl)
+library(ggplot2)
+library(dplyr)
+library(fBasics)
+library(MASS)
+library(corrgram)
+library(gclus)
+library(descr)
+library(GGally)
+library(agricolae)
+
+## Aqui empieza el trabajo 
+
+
+BDa2censo <- read_excel("~/maestria analitica de datos/Estadistica/Proyecto General/Base de datos inversionistas depurada v3.xlsx", 
+                                                       sheet = "BDInversionistas", col_types = c("text", 
+                                                                                                 "text", "text", "text", "text", "text", 
+                                                                                                 "text", "text", "text", "text", "text", 
+                                                                                                 "text", "numeric", "numeric", "text", 
+                                                                                                 "text", "date", "numeric", "text", 
+                                                                                                 "text", "numeric", "text", "text", 
+                                                                                                 "date", "text", "text", "text", "numeric", 
+                                                                                                 "text"))
+View(BDa2censo)
+
+# La siguiente lista corresponde al diccionario en donde se encuentra la definición de las varibles 
+
+##VARIABLES CUALITATIVAS 
+
+# Sector Campaña:
+# calidad tributaria:
+# PaiS
+# Sector Económico
+# tipo Inversionista
+# Propósito de inversión:
+
+#VARIABLES CUANTITATIVAS
+
+#ingresos Mes:
+# Patrimonio
+# Monto de inversión
+# Edad:
+# Cantidad de inversiones
+
+# OTRAS POSIBLES VARIABLES DE INTERÉS
+
+# Grupo Ingresos
+# Grupo Edad
+
+str(BDa2censo)
+
+## 1. Resumen univariado Cualitativas - Estadisticas descriptivas básicas variables cualitativas
+
+
+SectorEcon= BDa2censo$SectorCampaña
+SEtabla=data.frame(table(SectorEcon))
+porcentaje=prop.table(SEtabla[,2])
+SEtabla2= cbind(SEtabla, porcentaje)
+cum_frequencia=cumsum(SEtabla2[,2])
+SEtabla3= cbind(SEtabla2, cum_frequencia)
+cum_porcentaje=cumsum(SEtabla3[,3])
+SEtabla4= cbind(SEtabla3, cum_porcentaje)
+SEtabla4
+
+
+###
+
+Ingresos= BDa2censo$GrupoIngresos
+Itabla=data.frame(table(Ingresos))
+porcentaje=prop.table(Itabla[,2])
+Itabla2= cbind(Itabla, porcentaje)
+cum_frequencia=cumsum(Itabla2[,2])
+Itabla3= cbind(Itabla2, cum_frequencia)
+cum_porcentaje=cumsum(Itabla3[,3])
+Itabla4= cbind(Itabla3, cum_porcentaje)
+Itabla4
+
+#de la anterior tabla de frecuencias resulta interesante observar que hay una muy baja proporsion de personas con ingresos inferiores a 1 millon que hayan invertido en a2censo, no obstante un 27% de los inversionistas tienen rangos de ingresos superiores a 10 millones de pesos siendo la mayor proporsión de inversionistas en este grupo, en segundo lugar el grupo de personas con ingresos entre 3 y 5 millones de pesos
+
+
+
+
+# BPSectorEcon <- barplot(prop.table(table(BDa2censo$SectorCampaña)), #Histograma con Frecuencias relativas
+#                         col = rainbow(3), #Colores de las barras
+#                         ylim=c(0,0.30), #Altura del eje Y
+#                         xlim=c(0,24), # Ancho del eje X
+#                         main="Frecuencias relativas de participación por sector economico", #Titulo del grafico
+#                         ylab ="Frecuencias Relativas", #Titulo de eje Y
+#                         xlab = "Sector Económico", #titulo eje x
+#                         border = "black",  #Borde de las graficas negro
+#                         
+#                         ) 
+
+ggplot(BDa2censo,aes(x=BDa2censo$SectorCampaña,)) + geom_bar(aes(fill= BDa2censo$TipoInversionista)) + coord_flip() + theme_classic()
+
+
+# De acuerdo a la anterior tabla de frecuencias y su grafico de barras correspondientes podemos observar una mayor participación en cantidad de inversionistas en campañas que corresponden a los sectores de servicios alimenticios, tecnología, salud, energías y comercio. Por otro lado podemos observar que sectores como la publicidad, la educación, el turismo, el entretenimiento son sectores económicos de inversion en donde si bien se han logrado los objetivos de financiación no cuentan con una alta tracción de inversionistas en
+
+
+ggplot(BDa2censo,aes(x=BDa2censo$Propósito))+geom_bar()+facet_wrap(~BDa2censo$ClasePersona,nrow = 1) + coord_flip()
+
+
+
+ggplot(BDa2censo,aes(x=BDa2censo$Pais))+geom_bar()+facet_wrap(~BDa2censo$ClasePersona,nrow = 1) + coord_flip()
+
+
+ggplot(BDa2censo,aes(x=BDa2censo$Pais))+geom_bar()+facet_wrap(~BDa2censo$ClasePersona,nrow = 1) + coord_flip()
+
+
+ggplot(BDa2censo,aes(x=BDa2censo$Departamento))+geom_bar()+facet_wrap(~BDa2censo$ClasePersona,nrow = 1) + coord_flip()
+
+
+ggplot(BDa2censo,aes(x=BDa2censo$SectorEconomico))+geom_bar()+facet_wrap(~BDa2censo$ClasePersona,nrow = 1) + coord_flip()
+
+
+ggplot(BDa2censo,aes(x=BDa2censo$IngresosMes))+geom_histogram()+facet_wrap(~BDa2censo$ClasePersona,nrow = 1)
+
+ggplot(BDa2censo,aes(x=BDa2censo$GrupoIngresos))+geom_bar()+facet_wrap(~BDa2censo$ClasePersona,nrow = 1) + coord_flip()
+
+
+
+## 2. Resumen Bivariado Cualitativas
+
+ggplot(BDa2censo,aes(x=BDa2censo$Propósito))+geom_bar()+facet_wrap(~BDa2censo$ClasePersona,nrow = 1) + coord_flip()
+
+ggplot(BDa2censo,aes(x=BDa2censo$SectorCampaña,)) + geom_bar(aes(fill= BDa2censo$GrupoIngresos)) + coord_flip() + theme_classic()
+
+ggplot(BDa2censo,aes(x=BDa2censo$GrupoEdad,)) + geom_bar(aes(fill= BDa2censo$GrupoIngresos)) + coord_flip() + theme_classic()
+
+ggplot(BDa2censo,aes(x=BDa2censo$SectorCampaña,)) + geom_bar(aes(fill= BDa2censo$GrupoEdad)) + coord_flip() + theme_classic()
+
+ggplot(BDa2censo, aes(Propósito, GrupoEdad, fill= MontoInversion)) + geom_tile() +
+  scale_fill_gradient(low="white", high="blue") + theme(text = element_text(size=9), axis.text.x = element_text(angle=90, hjust=1))
+
+ggplot(BDa2censo, aes(Propósito, GrupoEdad, fill= CantidadInversiones)) + geom_tile() +
+  scale_fill_gradient(low="white", high="red") + theme(text = element_text(size=9), axis.text.x = element_text(angle=90, hjust=1))
+
+
+ggplot(BDa2censo, aes(Propósito, SectorCampaña , fill= CantidadInversiones)) + geom_tile() +
+  scale_fill_gradient(low="white", high="red") + theme(text = element_text(size=9), axis.text.x = element_text(angle=90, hjust=1))
+
+ggplot(BDa2censo, aes(SectorCampaña, MontoInversion)) + geom_point(aes(color = class))
+
+BDa2censo$SectorCampaña
+
+crosstab(BDa2censo$GrupoEdad,BDa2censo$MontoInversion)
+
+crosstab(BDa2censo$Edad,BDa2censo$CantidadInversiones)
+
+## 3. Resumen univariado Cuantitativas -  Estadisticas descriptivas básicas Variables cuantitativas 
+
+summary(BDa2censo$IngresosMes)
+
+summary(BDa2censo$Edad)
+
+summary(BDa2censo$Patrimonio)
+
+summary(BDa2censo$MontoInversion)
+
+summary(BDa2censo$CantidadInversiones)
+
+
+#=======================================================
+
+basicStats(BDa2censo$IngresosMes)
+
+basicStats(BDa2censo$Edad)
+
+basicStats(BDa2censo$Patrimonio)
+
+basicStats(BDa2censo$MontoInversion)
+
+basicStats(BDa2censo$CantidadInversiones)
+
+#=======================================================
+
+#meter diagrama de bigotes de una sola variable.
+
+ggplot(data = BDa2censo, mapping = aes(y = Edad)) + geom_boxplot()
+
+
+
+## 4. Resumen Bivariado Cuantitativas - Descriptivos bivariados y Correlaciones Lineales simples, multiples y correlaciones logisticas
+
+
+
+ggplot(data = BDa2censo, mapping = aes(x =  MontoInversion , y = GrupoIngresos)) + geom_boxplot()
+
+ggplot(data = BDa2censo, mapping = aes(x =  IngresosMes , y = GrupoIngresos)) + geom_boxplot()
+
+ggplot(data = BDa2censo, mapping = aes(x =  Patrimonio , y = GrupoIngresos)) + geom_boxplot()
+
+ggplot(data = BDa2censo, mapping = aes(x =  Edad , y = GrupoIngresos)) + geom_boxplot()
+
+ggplot(data = BDa2censo, mapping = aes(x =  CantidadInversiones , y = GrupoIngresos)) + geom_boxplot()
+
+#===================================================
+
+ggplot(data = BDa2censo, mapping = aes(x =  MontoInversion , y = CodEsInversionistaRecurrente)) + geom_boxplot()
+
+ggplot(data = BDa2censo, mapping = aes(x =  IngresosMes , y = CodEsInversionistaRecurrente)) + geom_boxplot()
+
+ggplot(data = BDa2censo, mapping = aes(x =  Patrimonio , y = CodEsInversionistaRecurrente)) + geom_boxplot()
+
+ggplot(data = BDa2censo, mapping = aes(x =  Edad , y = CodEsInversionistaRecurrente)) + geom_boxplot()
+
+ggplot(data = BDa2censo, mapping = aes(x =  CantidadInversiones , y = CodEsInversionistaRecurrente)) + geom_boxplot()
+
+#===================================================
+
+cor(x = BDa2censo$Edad, y = BDa2censo$MontoInversion, method = "pearson")
+
+cor(x = BDa2censo$IngresosMes, y = BDa2censo$MontoInversion, method = "pearson")
+
+cor(x = BDa2censo$Patrimonio, y = BDa2censo$MontoInversion, method = "pearson")
+
+cor(x = BDa2censo$CantidadInversiones, y = BDa2censo$MontoInversion, method = "pearson")
+
+
+#====================================================
+
+cor(x = BDa2censo$Edad, y = BDa2censo$CantidadInversiones, method = "pearson")
+
+cor(x = BDa2censo$IngresosMes, y = BDa2censo$CantidadInversiones, method = "pearson")
+
+cor(x = BDa2censo$Patrimonio, y = BDa2censo$CantidadInversiones, method = "pearson")
+
+cor(x = BDa2censo$MontoInversion, y = BDa2censo$CantidadInversiones, method = "pearson")
+
+
+
+corrgram(BDa2censo, order=TRUE, lower.panel=panel.shade,
+         upper.panel=panel.pie, text.panel=panel.txt,
+         main="Matriz de Correlaciones General")
+
+
+#Segun la anterior matriz podemos evidenciar que aparentemente las unicas variables que muestran un nivel de correlacion posiblemente significativo son la variable Edad y numero de inversiones y  la edad y el monto de inversión, encontrandose que posiblemente hay clusters dado por la edad que se relacionan con el perfil de inversionista
+
+## Analisis del modelo de regresión lineal incluyendo todas las variables
+
+modelotest <- lm(MontoInversion ~ CantidadInversiones + Edad + IngresosMes + MontoInversion + Patrimonio, data = BDa2censo )
+
+summary(modelotest)
+
+Predicciones1<-modelotest$fitted.values
+
+library(ggplot2)
+ggplot(data = BDa2censo, aes(x = predict(modelotest), 
+                        y = abs(rstudent(modelotest))))+
+  geom_hline(yintercept = 3, color = "grey", linetype = "dashed")+
+  geom_point(aes(color = ifelse(abs(rstudent(modelotest)) > 2, "red", "black")))+
+  scale_color_identity()+
+  labs(title = "DistribuciÃ³n de los residuos estudentizados", 
+       x = "PredicciÃ³n modelo", 
+       y = "Residuos estudentizados")+
+  theme_bw() + theme(plot.title = element_text(hjust = 0.5))
+
+
+## Analisis de modelo de regresión incluyendo solo las variables que demostraron aportar información al modelo general
+
+
+step(object = modelotest, direction = "both", trace = 1)  ## calculo de criterio de perdida de info
+
+modeloDef <- lm(MontoInversion ~ Edad ,data = BDa2censo )
+
+summary(modeloDef)
+
+
+PrediccionesDef<-modeloDef$fitted.values
+
+ggplot(data = BDa2censo, aes(x = predict(modeloDef), 
+                        y = abs(rstudent(modeloDef))))+
+  geom_hline(yintercept = 3, linetype = "dashed")+
+  geom_point(aes(color = ifelse(abs(rstudent(modeloDef)) > 2, "red", "black")))+
+  scale_color_identity()+
+  labs(title = "DistribuciÃ³n de los residuos estudentizados", 
+       x = "PredicciÃ³n modelo", 
+       y = "Residuos estudentizados")+
+  theme_bw() + theme(plot.title = element_text(hjust = 0.5))
+
+# Predicciones
+
+Y_dataset=BDa2censo$Edad
+Y_modelad=Predicciones
+Comparativo=cbind(Y_dataset, Y_modelad)
+Comparativo
+
+Diferecias=Y_dataset-Y_modelad
+Errores=cbind(Comparativo, Diferecias)
+Errores
+
+ggpairs(BDa2censo, lower = list(continuous = "smooth"),diag = list(continuous = "bar"), axisLabels = "none")
+
+

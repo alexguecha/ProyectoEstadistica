@@ -1,0 +1,399 @@
+---
+title: 'Crowfunding en el Mercado de Capitales Colombiano - Proyecto de Estadística para la Analítica de Datos'
+author: "Sergio Castañeda, Guillermo Castillo, Alexander Guecha"
+date: "24/04/2022"
+output:
+  word_document: default
+  pdf_document: default
+---
+```{r setup, include=T,error=FALSE,warning=T}
+knitr::opts_chunk$set(echo = T)
+
+library(readxl)
+library(ggplot2)
+library(dplyr)
+library(fBasics)
+library(MASS)
+library(corrgram)
+library(gclus)
+library(descr)
+library(GGally)
+library(agricolae)
+library(plotly)
+library(fdth)
+
+```
+
+```{r}
+
+
+BDa2censo <- read_excel("Base de datos inversionistas depurada v3.xlsx", 
+    col_types = c("text", "text", "text", 
+        "text", "text", "text", "text", "text", 
+        "text", "text", "text", "text", "numeric", 
+        "numeric", "text", "text", "date", 
+        "numeric", "text", "text", "numeric", 
+        "text", "text", "date", "text", "text", 
+        "text", "numeric", "text"))
+View(BDa2censo)
+
+```
+# Diccionario variables estudiadas
+
+La siguiente lista corresponde al diccionario de varibles de estudio , su definición  tipo de variable y algunas de sus categoria 
+
+##VARIABLES CUALITATIVAS 
+
+# Sector Campaña: Corresponde a una categorización manual realizada con base en el sector económico al que pertenece la empresa que obtuvo financiación en a2censo
+# calidad tributaria:
+# PaiS
+# Sector Económico
+# tipo Inversionista
+# Propósito de inversión:
+
+#VARIABLES CUANTITATIVAS
+
+#ingresos Mes:
+# Patrimonio
+# Monto de inversión
+# Edad:
+# Cantidad de inversiones
+
+# OTRAS POSIBLES VARIABLES DE INTERÉS
+
+# Grupo Ingresos
+# Grupo Edad
+
+
+
+
+# ANÁLISIS EXPLORATORIO DE LOS DATOS 
+
+## Resumen univariado de variables cualitativas
+
+### Variable: SectorCampaña
+
+
+```{r}
+SectorCampaña_= BDa2censo$SectorCampaña
+SCtabla=data.frame(table(SectorCampaña_))
+porcentaje=prop.table(SCtabla[,2])
+SCtabla2= cbind(SCtabla, porcentaje)
+cum_frequencia=cumsum(SCtabla2[,2])
+SCtabla3= cbind(SCtabla2, cum_frequencia)
+cum_porcentaje=cumsum(SCtabla3[,3])
+SCtabla4= cbind(SCtabla3, cum_porcentaje)
+SCtabla4
+knitr::kable(
+  (SCtabla4)
+)
+
+
+barplot(table(BDa2censo$SectorCampaña), col = "blue", main="Diagrama de barras",ylim=c(0,5000),las=2, cex.names = 0.7, lwd = 1.5, cex.axis=0.9 , xlab="Sector Campaña", ylab = "Conteos")
+
+
+pie(SCtabla4[,3],labels=SCtabla4[,1], clockwise=TRUE,radius=1,border="black",main="Diagrama de Sectores")
+
+```
+
+
+### Variable: Calidad Tributaria
+
+```{r}
+CalidadTributaria= BDa2censo$CalidadTributaria
+CTtabla=data.frame(table(CalidadTributaria))
+porcentaje=prop.table(CTtabla[,2])
+CTtabla2= cbind(CTtabla, porcentaje)
+cum_frequencia=cumsum(CTtabla2[,2])
+CTtabla3= cbind(CTtabla2, cum_frequencia)
+cum_porcentaje=cumsum(CTtabla3[,3])
+CTtabla4= cbind(CTtabla3, cum_porcentaje)
+CTtabla4
+knitr::kable(
+  (CTtabla4)
+)
+
+barplot(table(BDa2censo$CalidadTributaria), col = "blue", main="Diagrama de barras",ylim=c(0,13000),las=1, cex.names = 0.5, lwd = 1.5, cex.axis=0.9, xlab="Calidad Tributaria", ylab = "Conteos")
+
+pie(CTtabla4[,3],labels=CTtabla4[,1], clockwise=TRUE,radius=1,border="black",main="Diagrama de Sectores")
+
+```
+
+### Variable: Pais (Quitar variable)
+
+```{r}
+Pais= BDa2censo$Pais
+Ptabla=data.frame(table(Pais))
+porcentaje=prop.table(Ptabla[,2])
+Ptabla2= cbind(Ptabla, porcentaje)
+cum_frequencia=cumsum(Ptabla2[,2])
+Ptabla3= cbind(Ptabla2, cum_frequencia)
+cum_porcentaje=cumsum(Ptabla3[,3])
+Ptabla4= cbind(Ptabla3, cum_porcentaje)
+Ptabla4
+knitr::kable(
+  (Ptabla4)
+)
+
+colors <- c(2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20)
+BPPais <- barplot(prop.table(table(BDa2censo$Pais)), col= colors,main="Frecuencias relativas por País",ylim=c(0,1.5),ylab ="Frecuencias Relativas",las=2 )
+
+
+pie(Ptabla4[,3],labels=Ptabla4[,1], clockwise=TRUE,radius=1,border="black",main="Diagrama de Sectores")
+
+```
+
+
+### Variable: Ciudad
+
+```{r}
+Ciudad= BDa2censo$Ciudad
+Cdtabla=data.frame(table(Ciudad))
+porcentaje=prop.table(Cdtabla[,2])
+Cdtabla2= cbind(Cdtabla, porcentaje)
+cum_frequencia=cumsum(Cdtabla2[,2])
+Cdtabla3= cbind(Cdtabla2, cum_frequencia)
+cum_porcentaje=cumsum(Cdtabla3[,3])
+Cdtabla4= cbind(Cdtabla3, cum_porcentaje)
+Cdtabla4
+knitr::kable(
+  (Cdtabla4)
+)
+
+barplot(table(BDa2censo$Ciudad), col = "blue", main="Diagrama de barras",ylim=c(0,13000),las=1, cex.names = 0.5, lwd = 1.5, cex.axis=0.9, xlab="Ciudad", ylab = "Conteos")
+
+
+pie(Cdtabla4[,3],labels=Cdtabla4[,1], clockwise=TRUE,radius=1,border="black",main="Diagrama de Sectores")
+
+```
+
+
+# Departamento
+```{r}
+Departamento= BDa2censo$Departamento
+Dotabla=data.frame(table(Departamento))
+porcentaje=prop.table(Dotabla[,2])
+Dotabla2= cbind(Dotabla, porcentaje)
+cum_frequencia=cumsum(Dotabla2[,2])
+Dotabla3= cbind(Dotabla2, cum_frequencia)
+cum_porcentaje=cumsum(Dotabla3[,3])
+Dotabla4= cbind(Dotabla3, cum_porcentaje)
+Dotabla4
+knitr::kable(
+  (Dotabla4)
+)
+
+barplot(table(BDa2censo$Departamento), col = "blue", main="Diagrama de barras",ylim=c(0,13000),las=2, cex.names = 0.5, lwd = 1.5, cex.axis=0.9, xlab="Departamento", ylab = "Conteos")
+
+
+
+
+plot_ly(Dotabla4, labels = Dotabla4[,1], values = Dotabla4[,3], type = "pie") %>%
+  layout(title = "Diagrama de sectores por Departamentos")
+
+```
+
+### Variable: Sector Económico
+
+```{r}
+SectorEconomico= BDa2censo$SectorEconomico
+SEtabla=data.frame(table(SectorEconomico))
+porcentaje=prop.table(SEtabla[,2])
+SEtabla2= cbind(SEtabla, porcentaje)
+cum_frequencia=cumsum(SEtabla2[,2])
+SEtabla3= cbind(SEtabla2, cum_frequencia)
+cum_porcentaje=cumsum(SEtabla3[,3])
+SEtabla4= cbind(SEtabla3, cum_porcentaje)
+SEtabla4
+knitr::kable(
+  (SEtabla4)
+)
+
+barplot(table(BDa2censo$SectorEconomico), col = "blue", main="Diagrama de barras",ylim=c(0,10000),las=2, cex.names = 0.5, lwd = 1.5, cex.axis=0.9, xlab="Sector Economico", ylab = "Conteos")
+
+
+
+plot_ly(SEtabla4, labels = SEtabla4[,1], values = SEtabla4[,3], type = "pie") %>%
+  layout(title = "Diagrama de sectores por Sector Económico")
+
+```
+
+### Variable: Tipo Inversionista
+
+```{r}
+TipoInversionista= BDa2censo$TipoInversionista
+TItabla=data.frame(table(TipoInversionista))
+porcentaje=prop.table(TItabla[,2])
+TItabla2= cbind(TItabla, porcentaje)
+cum_frequencia=cumsum(TItabla2[,2])
+TItabla3= cbind(TItabla2, cum_frequencia)
+cum_porcentaje=cumsum(TItabla3[,3])
+TItabla4= cbind(TItabla3, cum_porcentaje)
+TItabla4
+knitr::kable(
+  (TItabla4)
+)
+
+barplot(table(BDa2censo$TipoInversionista), col = "blue", main="Diagrama de barras",ylim=c(0,21000),las=2, cex.names = 0.5, lwd = 1.5, cex.axis=0.9, xlab="Tipo Inversionista", ylab = "Conteos")
+
+plot_ly(TItabla4, labels = TItabla4[,1], values = TItabla4[,3], type = "pie") %>%
+  layout(title = "Diagrama de sectores por Tipo Inversionista")
+
+```
+
+### Variable: Propósito
+
+```{r}
+Proposito = BDa2censo$Propósito
+PTtabla=data.frame(table(Proposito))
+porcentaje=prop.table(PTtabla[,2])
+PTtabla2= cbind(PTtabla, porcentaje)
+cum_frequencia=cumsum(PTtabla2[,2])
+PTtabla3= cbind(PTtabla2, cum_frequencia)
+cum_porcentaje=cumsum(PTtabla3[,3])
+PTtabla4= cbind(PTtabla3, cum_porcentaje)
+PTtabla4
+knitr::kable(
+  (PTtabla4)
+)
+
+colors <- c(2, 3,4,5,6)
+BPProposito <- barplot(prop.table(table(BDa2censo$Propósito)), col= colors,main="Frecuencias relativas por Tipo de Inversionista",ylim=c(0,0.5),ylab ="Frecuencias Relativas",las=2 )
+
+
+pie(PTtabla4[,3],labels=PTtabla4[,1], clockwise=TRUE,radius=1,border="black",main="Diagrama de Sectores")
+
+```
+
+### Variable: Grupo de Edad
+
+```{r}
+GrupoEdad = BDa2censo$GrupoEdad
+GEtabla=data.frame(table(GrupoEdad))
+porcentaje=prop.table(GEtabla[,2])
+GEtabla2= cbind(GEtabla, porcentaje)
+cum_frequencia=cumsum(GEtabla2[,2])
+GEtabla3= cbind(GEtabla2, cum_frequencia)
+cum_porcentaje=cumsum(GEtabla3[,3])
+GEtabla4= cbind(GEtabla3, cum_porcentaje)
+GEtabla4
+knitr::kable(
+  (GEtabla4)
+)
+
+colors <- c(2, 3,4,5,6)
+BPProposito <- barplot(prop.table(table(BDa2censo$GrupoEdad)), col= colors,main="Frecuencias relativas por Tipo de Inversionista",ylim=c(0,0.5),ylab ="Frecuencias Relativas",las=2 )
+
+
+pie(GEtabla4[,3],labels=GEtabla4[,1], clockwise=TRUE,radius=1,border="black",main="Diagrama de Sectores")
+
+```
+
+### Variable: Grupo de Edad
+
+```{r}
+GrupoIngresos = BDa2censo$GrupoIngresos
+GItabla=data.frame(table(GrupoIngresos))
+porcentaje=prop.table(GItabla[,2])
+GItabla2= cbind(GItabla, porcentaje)
+cum_frequencia=cumsum(GItabla2[,2])
+GItabla3= cbind(GItabla2, cum_frequencia)
+cum_porcentaje=cumsum(GItabla3[,3])
+GItabla4= cbind(GItabla3, cum_porcentaje)
+GItabla4
+knitr::kable(
+  (GItabla4)
+)
+
+colors <- c(2, 3,4,5,6)
+BPProposito <- barplot(prop.table(table(BDa2censo$GrupoIngresos)), col= colors,main="Frecuencias relativas por Tipo de Inversionista",ylim=c(0,0.5),ylab ="Frecuencias Relativas",las=2 )
+
+
+pie(GItabla4[,3],labels=GItabla4[,1], clockwise=TRUE,radius=1,border="black",main="Diagrama de Sectores")
+
+```
+
+
+### Variable: Ingresos Mes
+
+```{r}
+
+
+IMtabla <- fdt(BDa2censo$IngresosMes,K=5)
+
+knitr::kable(
+  (IMtabla)
+)
+
+plot(IMtabla,type='fh',main="Histograma de frecuencias absolutas",
+     xlab="Ingresos Mes",ylab="Conteos",col="red")
+
+plot(IMtabla,type='fp',main="Poligono de frecuencias absolutas",
+     xlab="Ingresos Mes",ylab="Conteos",col="black",lwd=2) 
+
+```
+
+
+### Variable: Patrimonio
+
+```{r}
+
+POtabla <- fdt(BDa2censo$Patrimonio,breaks="Sturges",right=F)
+
+knitr::kable(
+  (POtabla)
+)
+
+```
+
+
+### Variable: Monto Inversión
+
+```{r}
+
+MItabla <- fdt(BDa2censo$MontoInversion, start=50000, end=156752000, h=31030000)
+
+knitr::kable(
+  (MItabla)
+)
+
+```
+
+### Variable: Edad
+
+```{r}
+
+Edtabla <- fdt(BDa2censo$Edad, start=2, end=90, h=17.6)
+
+knitr::kable(
+  (Edtabla)
+)
+
+```
+
+### Variable: Cantidad Inversiones
+
+```{r}
+
+CItabla <- fdt(BDa2censo$CantidadInversiones, k=5)
+
+knitr::kable(
+  (CItabla)
+)
+
+```
+
+
+## Análisis Bivariado
+
+
+
+
+
+
+
+
+
+
+
+

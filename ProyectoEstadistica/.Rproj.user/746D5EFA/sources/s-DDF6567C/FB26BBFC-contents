@@ -195,36 +195,71 @@ pie(PTtabla4[,3],labels=PTtabla4[,1], clockwise=TRUE,radius=1,border="black",mai
 ### Variable: Ingresos Mes
 
 ```{r}
-IngresosMes = BdCrowfunding$IngresosMes
-IMtabla=data.frame(table(IngresosMes))
-porcentaje=prop.table(IMtabla[,2])
-IMtabla2= cbind(IMtabla, porcentaje)
-cum_frequencia=cumsum(IMtabla2[,2])
-IMtabla3= cbind(IMtabla2, cum_frequencia)
-cum_porcentaje=cumsum(IMtabla3[,3])
-IMtabla4= cbind(IMtabla3, cum_porcentaje)
-IMtabla4
+library(fdth)
+
+IMtabla <- fdt(BdCrowfunding$IngresosMes,K=5)
+
 knitr::kable(
-  (IMtabla4)
+  (IMtabla)
 )
 
-colors <- c(2, 3,4,5,6)
-BPProposito <- barplot(prop.table(table(BdCrowfunding$Proposito)), col= colors,main="Frecuencias relativas por Tipo de Inversionista",ylim=c(0,0.5),ylab ="Frecuencias Relativas",las=2 )
+plot(IMtabla,type='fh',main="Histograma de frecuencias absolutas",
+     xlab="Ingresos Mes",ylab="Conteos",col="red")
 
-
-pie(PTtabla4[,3],labels=PTtabla4[,1], clockwise=TRUE,radius=1,border="black",main="Diagrama de Sectores")
+plot(IMtabla,type='fp',main="Poligono de frecuencias absolutas",
+     xlab="Ingresos Mes",ylab="Conteos",col="black",lwd=2) 
 
 ```
 
 
+### Variable: Patrimonio
+
+```{r}
+
+POtabla <- fdt(BdCrowfunding$Patrimonio,breaks="Sturges",right=F)
+
+knitr::kable(
+  (POtabla)
+)
+
+```
 
 
+### Variable: Monto Inversión
 
+```{r}
 
+MItabla <- fdt(BdCrowfunding$MontoInversion, start=50000, end=156752000, h=31030000)
 
+knitr::kable(
+  (MItabla)
+)
 
+```
 
+### Variable: Edad
 
+```{r}
+
+Edtabla <- fdt(BdCrowfunding$Edad, start=2, end=90, h=17.6)
+
+knitr::kable(
+  (Edtabla)
+)
+
+```
+
+### Variable: Cantidad Inversiones
+
+```{r}
+
+CItabla <- fdt(BdCrowfunding$CantidadInversiones, k=5)
+
+knitr::kable(
+  (CItabla)
+)
+
+```
 
 
 

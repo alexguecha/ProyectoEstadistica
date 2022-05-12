@@ -1,0 +1,6 @@
+"0","library(caTools)"
+"0","data = read.table(file.choose(),sep = "";"", head = T)"
+"0",""
+"0","set.seed(88)"
+"0","split <- sample.split(data$covid_res, SplitRatio = 0.75)"
+"0",""

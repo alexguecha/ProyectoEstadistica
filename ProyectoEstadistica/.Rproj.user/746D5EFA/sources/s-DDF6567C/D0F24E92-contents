@@ -144,10 +144,15 @@ summary(BdCrowfunding$IngresosMes)
 library(fdth)
 is.na(x = BdCrowfunding$IngresosMes)
 sum(is.na(x = BdCrowfunding$IngresosMes))
-IMtabla1 <- fdt(sort(BdCrowfunding$IngresosMes)[1000000:10000000], k = 5)
+IMtabla1 <- fdt(sort(BdCrowfunding$IngresosMes)[1000000:10000000], k = 5, na.rm = T)
 IMtabla <- fdt(BdCrowfunding$IngresosMes, start=0, end=11000000000, h=10)
 IMtabla <- fdt(BdCrowfunding$IngresosMes,breaks="Sturges",right=F)
+IMtabla <- fdt(sort(BdCrowfunding$IngresosMes)[1000000:10000000],breaks="Sturges")
+IMtabla
 IMtabla1
+knitr::kable(
+  (IMtabla)
+)
 IngresosMes = BdCrowfunding$IngresosMes
 IMtabla=data.frame(table(IngresosMes))
 porcentaje=prop.table(IMtabla[,2])
@@ -161,20 +166,87 @@ knitr::kable(
   (IMtabla4)
 )
 
+POtabla <- fdt(BdCrowfunding$Patrimonio,breaks="Sturges",right=F)
+
+knitr::kable(
+  (POtabla)
+)
+
+MItabla <- fdt(BdCrowfunding$MontoInversion,breaks="Sturges",right=F)
+
+MItabla <- fdt(BdCrowfunding$MontoInversion,breaks="Sturges",right=F)
+
+MItabla <- fdt(BdCrowfunding$MontoInversion, start=49500, end=156752000, h=31340500)
+
+knitr::kable(
+  (MItabla)
+)
+
+Edtabla <- fdt(BdCrowfunding$Edad,breaks="Sturges",right=F)
+
+knitr::kable(
+  (Edtabla)
+)
+
+MItabla <- fdt(BdCrowfunding$Edad, start=2, end=90, h=17.6)
+
+summary(BdCrowfunding$Edad)
+
+CItabla <- fdt(BdCrowfunding$CantidadInversiones, start=1, end=85, h=16.8)
+
+knitr::kable(
+  (CItabla)
+)
+
+summary(BdCrowfunding$CantidadInversiones)
+
+CItabla <- fdt(BdCrowfunding$CantidadInversiones,breaks="Sturges",right=F)
+
+CItabla <- fdt(BdCrowfunding$CantidadInversiones,breaks="Sturges")
+
+CItabla <- fdt(BdCrowfunding$CantidadInversiones, k=5)
+Edtabla <- fdt(BdCrowfunding$Edad,k=5)
+
+IMtabla <- fdt(BdCrowfunding$IngresosMes,k=5)
+knitr::kable(
+  (IMtabla)
+)
+
+MItabla <- fdt(BdCrowfunding$MontoInversion, start=50000, end=156752000, h=31030000)
+
+knitr::kable(
+  (MItabla)
+)
 
 
+CItabla <- fdt(BdCrowfunding$CantidadInversiones, start=1, end=85, h=14)
+knitr::kable(
+  (CItabla)
+)
 
 
+IMtabla <- fdt(BdCrowfunding$IngresosMes,K=5)
+IMtabla <- fdt(BdCrowfunding$IngresosMes,k=5)
+
+knitr::kable(
+  (IMtabla)
+)
+
+plot(IMtabla,type='fh',main="Histograma de frecuencias absolutas",
+     xlab="Ingresos Mes",ylab="Conteos",col="red") 
+
+plot(IMtabla,type='fp',main="Poligono de frecuencias absolutas",
+     xlab="Ingresos Mes",ylab="Conteos",col="black",lwd=2) 
+
+plot(IMtabla,type='rfpp',main="Poligono de frecuencias relativas (%)",
+     xlab="Ingresos",ylab="Porcentaje",col="black",lwd=2)
+
+plot(IMtabla,type='cfp',main="Poligono de frecuencias absolutas acumuladas",
+     xlab="Ingresos",ylab="Conteos",col="black") 
 
 
-
-
-
-
-
-
-
-
-
-
-
+library(agricolae)
+par(mfrow=c(1,2),mar=c(4,4,0,1),cex=1)
+h1<-graph.freq(BdCrowfunding$IngresosMes, density=6, col="blue",border="red",ylim=c(0,1), frequency=2,xlab="population")
+h2<-graph.freq(BdCrowfunding$IngresosMes, border=0,ylim=c(0,1), frequency=2,xlab="population")
+polygon.freq(h2,col="blue", frequency=2)
