@@ -43,3 +43,31 @@ geometric(BDa2censo$CantidadInversiones)
 #Media Geométrica de :   7.199434
 #Mean                    12.19810
 #Median                  8.000000
+
+#-------------------------------------------------------------------------------
+
+# Media Armónica
+
+#Función
+armonic<-function(x) 1/mean(1/x)
+
+#Variable : Edad
+armonic(BDa2censo$Edad)
+#Media Armónica:   35.015
+
+#Variable : Tasa
+armonic(BDa2censo$Tasa)
+#Media Armónica:   0.1034249
+
+#Variable : Ingresos Mes
+armonic(BDa2censo$IngresosMes)
+#Media Armónica:   $3793266
+
+#Variable : Patrimonio
+armonic(BDa2censo$Patrimonio)
+#Media Armónica:   $14267648
+
+#Variable : MontoInversion
+armonic(BDa2censo$MontoInversion)
+#Media Armónica:   $14267648
+
