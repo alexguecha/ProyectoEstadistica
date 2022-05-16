@@ -1,10 +1,13 @@
 ---
-title: 'Crowfunding en el Mercado de Capitales Colombiano - Proyecto de Estadística para la Analítica de Datos'
+title: Crowfunding en el Mercado de Capitales Colombiano - Proyecto de Estadística
+  para la Analítica de Datos
 author: "Sergio Castañeda, Guillermo Castillo, Alexander Guecha"
 date: "24/04/2022"
 output:
-  pdf_document: default
+  html_document:
+    df_print: paged
   word_document: default
+  pdf_document: default
 ---
 
 Justificación: el presente analisis estadístico propone estimar el monto a invertir por un inversionista, teniendo en cuenta las variables que componen la base con la información recopilada de su interacción con el producto. 
@@ -35,17 +38,29 @@ library(pROC)
 
 ```{r}
 
+
+
 library(readxl)
-BDa2censo <- read_excel("maestria analitica de datos/Estadistica/Proyecto General/Base de datos inversionistas depurada v3.xlsx", 
-    col_types = c("text", "text", "text", 
-        "text", "text", "text", "text", "text", 
-        "text", "text", "text", "numeric", 
-        "numeric", "numeric", "text", "numeric", 
-        "date", "numeric", "numeric", "numeric", 
-        "numeric", "text", "text", "date", 
-        "text", "text", "text", "numeric", 
-        "text", "numeric"))
-View(BDa2censo)
+BDa2censo <- read_excel("BD_inversionistas_depurada_V6_anonimizada.xlsx")
+
+```
+
+```{r}
+
+#library(readxl)
+#BDa2censo <- read_excel("maestria analitica de datos/Estadistica/Proyecto General/Base de datos #inversionistas depurada v3.xlsx", 
+#    col_types = c("text", "text", "text", 
+#        "text", "text", "text", "text", "text", 
+#        "text", "text", "text", "numeric", 
+#        "numeric", "numeric", "text", "numeric", 
+#        "date", "numeric", "numeric", "numeric", 
+#        "numeric", "text", "text", "date", 
+#        "text", "text", "text", "numeric", 
+#        "text", "numeric"))
+#View(BDa2censo)
+
+
+
 
 ```
 
@@ -535,6 +550,53 @@ ggplot(BDa2censo, aes( y=Tasa)) +
 ```
 De acuerdo al analisis de la variable cuantitativa de tasa de adjudicación de la campaña podemos encontrar que hay dos rangos de tasas predominantes en cantidad de inversionistas, el 29.52% (n = 7595) de los inversionistas lograron tasas de adjudicacion de la inversion entre los 0.098 y el 0.102. En siguiente lugar podemos encontrar que el 12% de los inversionistas (n= 3068	 )lograron tasas entre el 0.1085 y el 0.1118
 
+## Resumen de medidas de localización
+```{r}
+# Media Geométrica
+#Función
+geometric<-function(x) exp(sum(log(x))/length(x))
+
+#-------------------------------------------------------------------------------
+
+# Media Armónica
+#Función
+armonic<-function(x) 1/mean(1/x)
+
+
+#-------------------------------------------------------------------------------
+
+#Media Recortada en 100α% :
+#Función:
+recortada<-function(x) mean(x, trim=0.1)
+
+
+#-------------------------------------------------------------------------------
+
+#Media Winsorizada:
+library(psych)#Paquete útil para calcular la media Winsorizada:
+#Funcion
+winsorizada<-function(x) winsor.mean(x, trim= 0.1, na.rm = TRUE)
+
+#--------------------------------------------------------------------------------
+#Cálculo Resumen de medidas de localización
+
+options(scipen = 999)
+ResumenVaribles<- c("Edad","Tasa","Ingresos Mes", "Patrimonio","Monto Inversion","Cantidad Inversiones" )
+ResumenPromedio<- c(mean(BDa2censo$Edad),mean(BDa2censo$Tasa),mean(BDa2censo$IngresosMes),mean(BDa2censo$Patrimonio), mean(BDa2censo$MontoInversion),mean(BDa2censo$CantidadInversiones))
+ResumenMediana<- c(median(BDa2censo$Edad),median(BDa2censo$Tasa),median(BDa2censo$IngresosMes),median(BDa2censo$Patrimonio), median(BDa2censo$MontoInversion),median(BDa2censo$CantidadInversiones))
+ResumenGeometrica<- c(geometric(BDa2censo$Edad),geometric(BDa2censo$Tasa),geometric(BDa2censo$IngresosMes),geometric(BDa2censo$Patrimonio), geometric(BDa2censo$MontoInversion),geometric(BDa2censo$CantidadInversiones))
+ResumenArmonica<- c(armonic(BDa2censo$Edad),armonic(BDa2censo$Tasa),armonic(BDa2censo$IngresosMes),armonic(BDa2censo$Patrimonio), armonic(BDa2censo$MontoInversion),armonic(BDa2censo$CantidadInversiones))
+ResumenRecortada<- c(recortada(BDa2censo$Edad),recortada(BDa2censo$Tasa),recortada(BDa2censo$IngresosMes),recortada(BDa2censo$Patrimonio), recortada(BDa2censo$MontoInversion),recortada(BDa2censo$CantidadInversiones))
+ResumenWinsorizada<- c(winsorizada(BDa2censo$Edad),winsorizada(BDa2censo$Tasa),winsorizada(BDa2censo$IngresosMes),winsorizada(BDa2censo$Patrimonio), winsorizada(BDa2censo$MontoInversion),winsorizada(BDa2censo$CantidadInversiones))
+
+resumenMedia <- data.frame(ResumenVaribles ,ResumenPromedio,ResumenMediana,ResumenGeometrica,ResumenArmonica,ResumenRecortada,ResumenWinsorizada)
+
+resumenMedia
+
+
+```
+
+
 ## Análisis Bivariado Cualitativo
 
 #Visualización de las variables cualitativas desde la perspectiva de grupo de ingresos
@@ -749,20 +811,20 @@ ggplot(BDa2censo, aes(GrupoIngresos, GrupoEdad, fill= MontoInversion)) + geom_ti
 
 ```{r}
 
-library(ggplot2)
-library(dplyr)
-library(tidyr)
-HM <- 
-  BDa2censo %>%
-  pivot_longer(-MontoInversion) %>% 
-  group_by(MontoInversion, name) %>% 
-  mutate(MontoInversion = factor(MontoInversion, ordered = TRUE),
-         mean = round(mean(value), 2))
+#library(ggplot2)
+#library(dplyr)
+#library(tidyr)
+#HM <- 
+#  BDa2censo %>%
+#  pivot_longer(-MontoInversion) %>% 
+#  group_by(MontoInversion, name) %>% 
+#  mutate(MontoInversion = factor(MontoInversion, ordered = TRUE),
+#         mean = round(mean(value), 2))
 
 
-ggplot(HM, aes(x=MontoInversion, y=name, fill=value)) + 
-  geom_tile() +
-  geom_text(aes(MontoInversion, name, label=mean), colour = "white", check_overlap = TRUE) 
+#ggplot(HM, aes(x=MontoInversion, y=name, fill=value)) + 
+#  geom_tile() +
+#  geom_text(aes(MontoInversion, name, label=mean), colour = "white", check_overlap = TRUE) 
 ```
 
 ##HASTA AQUI VOY YO - SERGIO
@@ -781,11 +843,11 @@ cor(x = BDa2censo$Patrimonio, y = BDa2censo$MontoInversion, method = "pearson")
 
 cor(x = BDa2censo$CantidadInversiones, y = BDa2censo$MontoInversion, method = "pearson")
 
-cor(x = BDa2censo$CodProposito, y = BDa2censo$MontoInversion, method = "pearson")
+#cor(x = BDa2censo$CodProposito, y = BDa2censo$MontoInversion, method = "pearson")
 
-cor(x = BDa2censo$CodProposito, y = BDa2censo$CantidadInversiones, method = "pearson")
+#cor(x = BDa2censo$CodProposito, y = BDa2censo$CantidadInversiones, method = "pearson")
 
-cor(x = BDa2censo$PotencialP2, y = BDa2censo$Edad, method = "pearson")
+#cor(x = BDa2censo$PotencialP2, y = BDa2censo$Edad, method = "pearson")
 ```
 Se encuentra que desde una correlacion lineal simple no hay correlación entre ninguna de las variables a la luz de la variable monto inversión.
 
@@ -875,10 +937,10 @@ Despues de correr varias regresiones, se concluye que no hay una correlación si
 ```{r}
 BDa2censo$CodEsInversionistaRecurrente<-as.factor(BDa2censo$CodEsInversionistaRecurrente)
 BDa2censo$SectorCampaña<-as.factor(BDa2censo$SectorCampaña)
-BDa2censo$CalidadTributaria<-as.factor(BDa2censo$CalidadTributaria)
+#BDa2censo$CalidadTributaria<-as.factor(BDa2censo$CalidadTributaria)
 BDa2censo$Propósito<-as.factor(BDa2censo$Propósito)
-BDa2censo$CodProposito<-as.factor(BDa2censo$CodProposito)
-BDa2censo$PotencialP2<-as.factor(BDa2censo$PotencialP2)
+#BDa2censo$CodProposito<-as.factor(BDa2censo$CodProposito)
+#BDa2censo$PotencialP2<-as.factor(BDa2censo$PotencialP2)
 ```
 
 
@@ -903,7 +965,7 @@ De otro lado, las variables monto inversión, edad e ingresos mes tambien muestr
 
 
 ```{r}
-logMultiple4=glm(data=training,CodEsInversionistaRecurrente~MontoInversion+Edad+IngresosMes+Patrimonio+SectorCampaña+Propósito+CalidadTributaria, family = binomial)
+logMultiple4=glm(data=training,CodEsInversionistaRecurrente~MontoInversion+Edad+IngresosMes+Patrimonio+SectorCampaña+Propósito, family = binomial)
 summary(logMultiple4)
 
 ```
@@ -939,9 +1001,176 @@ test_roc = roc(training$CodEsInversionistaRecurrente ~ test_prob, plot = TRUE, p
 ```
 
 
+# Muestreo
+
+```{r}
+N=nrow(BDa2censo)
+n=500
+set.seed(123)
+masBD <- BDa2censo [ sample (N, size = n ),]
+
+
+MediaEdad=round(mean(masBD$Edad),2)
+MediaEdad
+
+VarEdad=var(masBD$Edad)
+VarEdad
+
+
+VarEstim=round(((1-n/N)*VarEdad/n),2)
+VarEstim
+
+
+EE=round(sqrt(VarEstim),2)
+EE
+
+CV=round((EE/MediaEdad)*100,2)
+CV
+
+valort=qt(c(0.025),df=(n-1),lower.tail = FALSE)# probabilidad de cola 0.025 equivle a nivel de confianza del 95%, ya q la dist t es simetrica
+
+Lsup=round(MediaEdad+(valort*EE),2) 
+Linf=round(MediaEdad-(valort*EE),2)
+
+
+round(c(VarEdad,Linf),digit=2)
+resumenMediaEdad <- data.frame(n ,MediaEdad,VarEstim,EE,Linf,Lsup,CV)
+resumenMediaEdad
+mean(BDa2censo$Edad)
+ ######
+
+MediaInversion=mean(masBD$MontoInversion)
+VarMuestraInv =var(masBD$MontoInversion)
+VarEstimadaMediaInv=((N-n)/N)*(VarMuestraInv/n)
 
 
 
+VarEstimInv=round(((1-n/N)*VarEstimadaMediaInv/n),2)
+VarEstimInv
+
+
+EEmediaInv=round(sqrt(VarEstimInv),2)
+EEmediaInv
+
+CVmediaInv=round((EEmediaInv/MediaInversion)*100,2)
+CVmediaInv
+
+valort=qt(c(0.025),df=(n-1),lower.tail = FALSE)# probabilidad de cola 0.025 equivle a nivel de confianza del 95%, ya q la dist t es simetrica
+
+LsupMediaInv=round(MediaInversion+(valort*EEmediaInv),2) 
+LinfMediaInv=round(MediaInversion-(valort*EEmediaInv),2)
+
+
+
+resumenMediaInversion <- data.frame(n ,MediaInversion,VarEstimInv,EEmediaInv,LinfMediaInv,LsupMediaInv,CVmediaInv)
+resumenMediaInversion
+mean(BDa2censo$MontoInversion)
+
+
+###
+
+MediaInversion=mean(masBD$MontoInversion)
+TotalInversion=N*MediaInversion
+TotalInversion
+
+VarMuestra =var(masBD$MontoInversion)
+VarEstimadaMedia=((N-n)/N)*(VarMuestra/n)
+
+VarEstimadaTotal=N*N*VarEstimadaMedia
+EEtotal=sqrt(VarEstimadaTotal)
+
+
+CVtotal=round((EEtotal/TotalInversion)*100,2)
+CVtotal
+
+LsupTotal=round(TotalInversion+(valort*EEtotal),2) 
+LinfTotal=round(TotalInversion-(valort*EEtotal),2)
+
+sum(BDa2censo$MontoInversion)
+
+resumenTotalInversion <- data.frame(n ,TotalInversion,VarEstimadaTotal,EEtotal,LinfTotal,LsupTotal,CVtotal)
+resumenTotalInversion
+####
+
+library(rgdal)
+library(sf)
+
+sp_df <- readOGR(dsn = "~/GitHub/ProyectoEstadistica/ProyectoEstadistica/Sergio/MGN2021_DPTO_POLITICO", layer = "MGN_DPTO_POLITICO")
+
+#head(sp_df)
+#fix(sp_df)
+#as.data.frame(sp_df)
+
+DPTO_SH="~/GitHub/ProyectoEstadistica/ProyectoEstadistica/Sergio/MGN2021_DPTO_POLITICO/MGN_DPTO_POLITICO.shp"
+
+DPTO_SH2 <- st_read(DPTO_SH)
+
+library(raster)
+library(leaflet)
+library(dplyr)
+library(sf)
+library(tmap)
+library(tigris)
+library(dplyr)
+InverDepto <- masBD %>%
+  group_by(Departamento) %>%
+  summarise(promedioEdad = mean(Edad),promedioInver = mean(MontoInversion),Cod_Dpto)
+
+
+
+
+# Para visualizar la base resumida
+ResumenInv=as.data.frame(InverDepto)
+#ResumenInv
+
+
+library(tidyr)
+Etiquetas=unite(ResumenInv, Etiqueta,c(1,2,3), sep = ": ", remove = TRUE)
+Etiquetas=Etiquetas[,1]
+#Etiquetas
+
+
+
+Resumen3=cbind(ResumenInv, Etiquetas )
+#Resumen3
+
+
+#DPTO_SH2
+
+DPTO_JOIN <- geo_join(DPTO_SH2, Resumen3,"DPTO_CCDGO", "Cod_Dpto")
+##DPTO_JOIN = as.data.frame(DPTO_JOIN)
+#DPTO_JOIN
+
+
+pal <- colorNumeric( palette = "RdYlBu", domain=DPTO_JOIN$promedioInver)  #palette = "YlGnBu"   "RdBu"  "RdYlBu"  "Spectral"  "Paired"  "PuRd"  "RdYlGn"
+
+popup_sb <- paste0("Promedio de Monto de Inversión: ", as.character(DPTO_JOIN$promedioInver))
+
+
+leaflet(sp_df) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  #setView(-98.483330, 38.712046, zoom = 4) %>% 
+  addPolygons(data = DPTO_JOIN , 
+              fillColor = ~pal(DPTO_JOIN$promedioInver),
+              opacity = 1,
+              color = "black",
+              dashArray = "3",fillOpacity = 0.9,
+              highlight = highlightOptions(
+                weight = 1,
+                color = "#666",
+                dashArray = "",
+                fillOpacity = 1,
+                bringToFront = TRUE),
+              label = DPTO_JOIN$Etiquetas,
+              labelOptions = labelOptions(
+                style = list("font-weight" = "normal", padding = "3px 8px"),
+                textsize = "15px",
+                direction = "auto"))%>%
+  addLegend(pal = pal, values =DPTO_JOIN$promedioInver, opacity = 0.7, title = NULL,
+            position = "bottomright")
+
+
+```
 
 
 
