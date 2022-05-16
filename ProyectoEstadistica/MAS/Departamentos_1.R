@@ -50,11 +50,11 @@ library(sf)
 library(tmap)
 library(tigris)
 
-pal <- colorNumeric( palette = "RdYlBu", domain=sp_df$AREA)  #palette = "YlGnBu"   "RdBu"  "RdYlBu"  "Spectral"  "Paired"  "PuRd"  "RdYlGn"
+pal <- colorNumeric( palette = "RdYlBu", domain=sp_df$SHAPE_Area)  #palette = "YlGnBu"   "RdBu"  "RdYlBu"  "Spectral"  "Paired"  "PuRd"  "RdYlGn"
 
 leaflet(sp_df) %>%
   addProviderTiles("CartoDB.Positron") %>%
-  addPolygons(color = ~pal(sp_df$AREA),
+  addPolygons(color = ~pal(sp_df$SHAPE_Area),
               stroke = FALSE, fillOpacity = 1.0)  # Este parámetro proporciona opacidad en el mapa (Valores esntre 0 y 1)
 
 

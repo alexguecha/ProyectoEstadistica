@@ -1,0 +1,185 @@
+---
+title: 'Taller Análisis de Regresión Logística - MAD'
+author: "Sergio Castañeda, Guillermo Castillo, Alexander Guecha"
+date: "27/4/2022"
+output:
+  word_document: default
+  pdf_document: default
+---
+```{r setup, include=T,error=FALSE,warning=F}
+knitr::opts_chunk$set(echo = T)
+
+library(caTools)
+library(magrittr) # needs to be run every time you start R and want to use %>%
+library(dplyr)
+library(InformationValue)
+library(pROC)
+data = read.table(file.choose(),sep = ";", head = T)
+
+```
+
+
+**Contexto (fuente original):**
+
+A health crisis of massive proportion such as the current COVID-9 pandemic provides us with an opportunity to ponder and reflect over what we can better in the way we deal with healthcare to make us humans be more prepared and enabled to combat such an event in the future.
+During the entire course of the pandemic, one of the main problems that healthcare providers have faced is the shortage of medical resources and a proper plan to efficiently distribute them.
+They have been in the dark failing to understand how much resource they could even in the very next week as the COVID-19 curve has swayed very unpredictably. In these tough times, being able to predict what kind of resource an individual might require at the time of being tested positive or even before that will be of great help to the authorities as they would be able to procure and arrange for the resources necessary to save the life of that patient.
+
+---
+
+Con la información adjunta, que proviene del link anterior, implemente un ajuste de un Modelo de Regresión Logística desarrollando todos los procesos, validaciones, etc. necesarios para encontrar la mejor Regresión Logística útil para modelar dicho fenómeno.
+
+## 1.Proporcione un análisis estadístico apropiado y caracterizador de las propensiones resultantes del      ajuste de dicho modelo.
+
+```{r}
+data <- data %>%
+  mutate(
+    covid_res          = as.factor(covid_res),
+    sex                = as.factor(sex),              
+    patient_type       = as.factor(patient_type),
+    intubed            = as.factor(intubed),
+    pneumonia          = as.factor(pneumonia),
+    pregnancy          = as.factor(pregnancy),
+    diabetes           = as.factor(diabetes),
+    copd               = as.factor(copd),
+    asthma             = as.factor(asthma),
+    inmsupr            = as.factor(inmsupr),
+    hypertension       = as.factor(hypertension),
+    other_disease      = as.factor(other_disease),
+    cardiovascular     = as.factor(cardiovascular),
+    obesity            = as.factor(obesity),
+    renal_chronic      = as.factor(renal_chronic),
+    tobacco            = as.factor(tobacco),
+    contact_other_covid= as.factor(contact_other_covid),
+    icu                = as.factor(icu),
+  )
+
+str(data)
+
+set.seed(88)
+split <- sample.split(data$covid_res, SplitRatio = 0.75)
+
+set.seed(88)
+split <- sample.split(data, SplitRatio = 0.75)
+
+data_train <- subset(data, split == TRUE)
+data_test <- subset(data, split == FALSE)
+
+# Modelo No 1
+model1 <- glm (covid_res ~ sex + patient_type + intubed + pneumonia + age + pregnancy + diabetes + copd + asthma + inmsupr + hypertension + other_disease + cardiovascular + obesity+ renal_chronic + tobacco + contact_other_covid + icu, data = data_train, family = binomial)
+
+summary(model1)
+
+predict <- predict(model1, type = 'response')
+predict2 <- as.data.frame(predict(model1, type = 'response'))
+#fix(predict2)
+
+optCutOff <- optimalCutoff(data_train$covid_res, predict)[1] 
+optCutOff
+confusionMatrix(data_train$covid_res, predict, threshold = optCutOff)
+sensitivity(data_train$covid_res, predict, threshold = optCutOff)
+specificity(data_train$covid_res, predict, threshold = optCutOff)
+plotROC(data_train$covid_res, predict)
+
+# Modelo No 2
+model2 <- glm (covid_res ~ sex + patient_type + intubed + pneumonia + age + pregnancy + diabetes +  cardiovascular + obesity+  tobacco + contact_other_covid + icu, data = data_train, family = binomial)
+
+summary(model2)
+
+predict <- predict(model2, type = 'response')
+predict2 <- as.data.frame(predict(model2, type = 'response'))
+#fix(predict2)
+
+optCutOff <- optimalCutoff(data_train$covid_res, predict)[1] 
+optCutOff
+confusionMatrix(data_train$covid_res, predict, threshold = optCutOff)
+sensitivity(data_train$covid_res, predict, threshold = optCutOff)
+specificity(data_train$covid_res, predict, threshold = optCutOff)
+plotROC(data_train$covid_res, predict)
+
+# Modelo No 3
+
+model3 <- glm (covid_res ~ sex + patient_type + intubed + pneumonia + age + pregnancy + diabetes +   obesity+ tobacco +  contact_other_covid + icu, data = data_train, family = binomial)
+
+summary(model3)
+
+predict <- predict(model1, type = 'response')
+predict2 <- as.data.frame(predict(model1, type = 'response'))
+#fix(predict2)
+
+optCutOff <- optimalCutoff(data_train$covid_res, predict)[1] 
+optCutOff
+confusionMatrix(data_train$covid_res, predict, threshold = optCutOff)
+sensitivity(data_train$covid_res, predict, threshold = optCutOff)
+specificity(data_train$covid_res, predict, threshold = optCutOff)
+plotROC(data_train$covid_res, predict)
+
+```
+
+De acuerdo a los diferentes modelos analizados buscando la mejor combinación de variables y parsimonía en el análisis, se encuentra que el **modelo1** es el que presenta mejor AIC con un resultado de 533758.
+
+No obstante, se evidencia que la curva **ROC** no sube bruscamente por lo tanto indica que la capacidad que tiene el modelo de predecir la tasa de verdaderos positivos o sensibilidad (tpr=0.2929765) es muy baja, así mismo la relación **1-Especificad**  (fpr=0.8817902) que corresponde a la tasa de falsos positivos corresponde a una proporción elevada, lo anterior es evidencia de un modelo que tiene una baja capacidad de predicción, aún cuando es el modelo con menor índice de pérdida de información AIC = 533758
+
+
+
+
+## 2. Determine un Threshold (cut-off) óptimo para el modelo ajustado argumentando su decisión.
+
+```{r}
+
+
+```
+
+El puntaje de probabilidad de la predicción de corte por defecto es de 0.5, asi mismo se hicieron pruebas con valores de 0.25 y 0.75, sin embargo los resultados no fueron los más optimos y en este sentido se realizó la investigación concluyendo en una función que permite calcular el cutoff óptimo a la luz de los datos arrojando un valor de 0.4885915, valor que al correr la curva ROC deriva en un mejor AUC = 0.638. 
+
+
+
+
+## 3. Con base en este punto de corte, realice UNA SOLA CLASIFICACIÓN de un único sujeto, con información sintética (información no real proporcionada por ustedes), por medio de la probabilidad estimada a partir del modelo ajustado.
+
+```{r}
+nuevoSujeto = read.table(file.choose(),sep = ";", head = T)
+
+```
+
+### Cargue y visualización del nuevo sujeto
+
+```{r}
+head(nuevoSujeto)
+prediccion <- predict(model1, data=nuevoSujeto)
+
+
+nuevoSujeto <- nuevoSujeto %>%
+  mutate(
+    covid_res          = as.factor(covid_res),
+    sex                = as.factor(sex),              
+    patient_type       = as.factor(patient_type),
+    intubed            = as.factor(intubed),
+    pneumonia          = as.factor(pneumonia),
+    pregnancy          = as.factor(pregnancy),
+    diabetes           = as.factor(diabetes),
+    copd               = as.factor(copd),
+    asthma             = as.factor(asthma),
+    inmsupr            = as.factor(inmsupr),
+    hypertension       = as.factor(hypertension),
+    other_disease      = as.factor(other_disease),
+    cardiovascular     = as.factor(cardiovascular),
+    obesity            = as.factor(obesity),
+    renal_chronic      = as.factor(renal_chronic),
+    tobacco            = as.factor(tobacco),
+    contact_other_covid= as.factor(contact_other_covid),
+    icu                = as.factor(icu),
+  )
+
+str(nuevoSujeto)
+
+```
+
+```{r}
+predicted <- predict(model1,nuevoSujeto, type = "response" )
+
+predicted
+```
+Se realizó el cargue del dataframe "nuevo Sujeto"  que corresponde a una información sintética que despues de haber sido analizada bajo el modelo arroja un valor probabilidad de 0.2257765  con base en que el CutOff definido para el modelo fue de 0.4885915 , en este caso el individuo de prueba resulta negativo para resultado de covid.
+
+

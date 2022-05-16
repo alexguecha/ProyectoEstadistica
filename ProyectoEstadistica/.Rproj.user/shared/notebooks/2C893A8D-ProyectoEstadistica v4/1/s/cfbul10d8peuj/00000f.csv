@@ -1,0 +1,6 @@
+"0",""
+"0",""
+"0",""
+"0","library(readxl)"
+"0","BDa2censo <- read_excel(""BD_inversionistas_depurada_V6_anonimizada.xlsx"")"
+"0",""
