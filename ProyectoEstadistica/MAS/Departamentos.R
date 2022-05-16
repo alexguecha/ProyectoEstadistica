@@ -16,7 +16,7 @@ colnames(MARCO_INV)
 
 
 
-N=dim(MARCO_INV$MontoInversion)
+N=dim(MARCO_INV)
 n=500
 
 MAS<- sample(1:N,n)
@@ -29,7 +29,7 @@ library(rgdal)
 
 # Indicandole a R donde encontrar nuestra carpeta de Shapefile, y el 
 # nombre del archivo Shapefile.
-sp_df <- readOGR(dsn = "C:/backup equipo personal/UCentral/FUNDAMENTOS DE ESTADISTICA/Clases/SesionMayo52022/depto", layer = "depto")
+sp_df <- readOGR(dsn = "~/GitHub/ProyectoEstadistica/ProyectoEstadistica/MAS/depto", layer = "depto")
 
 head(sp_df)
 fix(sp_df)
@@ -42,9 +42,27 @@ fix(DepartamentoEXCEL)
 library(readxl)
 library(writexl)
 
-write_xlsx(DepartamentoEXCEL,"C:/backup equipo personal/UCentral/FUNDAMENTOS DE ESTADISTICA/Clases/SesionMayo52022/DepartamentoEXCEL.xlsx")
+write_xlsx(DepartamentoEXCEL,"~/GitHub/ProyectoEstadistica/ProyectoEstadistica/MAS/DepartamentoEXCEL.xlsx")
 
-DeptoSH="C:/backup equipo personal/UCentral/FUNDAMENTOS DE ESTADISTICA/Clases/SesionMayo52022/depto/depto.shp"
+library(leaflet)
+library(dplyr)
+library(sf)
+library(tmap)
+library(tigris)
+
+pal <- colorNumeric( palette = "RdYlBu", domain=sp_df$AREA)  #palette = "YlGnBu"   "RdBu"  "RdYlBu"  "Spectral"  "Paired"  "PuRd"  "RdYlGn"
+
+leaflet(sp_df) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  addPolygons(color = ~pal(sp_df$AREA),
+              stroke = FALSE, fillOpacity = 1.0)  # Este parámetro proporciona opacidad en el mapa (Valores esntre 0 y 1)
+
+
+
+
+
+
+DeptoSH="~/GitHub/ProyectoEstadistica/ProyectoEstadistica/MAS/depto/depto.shp"
 
 Departamentos_Shapefile <- st_read(DeptoSH)
 
@@ -56,12 +74,15 @@ Departamentos_inversion <- MARCO_INV %>%
 Resumen=as.data.frame(Departamentos_inversion)
 Resumen
 
+write_xlsx(Resumen,"~/GitHub/ProyectoEstadistica/ProyectoEstadistica/MAS/ResumenEXCEL.xlsx")
+
+
 NroDepto=DepartamentoEXCEL$DPTO
 NroDepto= as.data.frame(NroDepto)
 
 
 Resumen2=cbind(Resumen, NroDepto )
-Resumen2
+Resumen2 =ResumenEXCEL
 
 library(tidyr)
 Etiquetas=unite(Resumen2, Etiqueta,c(1,5), sep = ": ", remove = TRUE)
@@ -77,13 +98,13 @@ Resumen3
 
 # Vinculando el Shapefile con el Dataset
 # sp_df: El Shapefile     y Siniestros_Bogota: El dataset
-LOCALIDADES_JOIN <- geo_join(Bogota_Localidades_Shapefile, Resumen3,"LocCodigo", "NroLOCALIDAD")
+DEPARTAMENTOS_JOIN <- geo_join(Departamentos_Shapefile, Resumen3,"DPTO", "DPTO")
 
 
 
 # Creando una paleta de colores basada en el rango de números en la 
 # columna Total_M
-pal <- colorNumeric("RdYlBu", domain=LOCALIDADES_JOIN$Total_M)
+pal <- colorNumeric("RdYlBu", domain=DEPARTAMENTOS_JOIN$Total_M)
 
 
 # Deshacerse de filas con valores NA
@@ -91,20 +112,21 @@ pal <- colorNumeric("RdYlBu", domain=LOCALIDADES_JOIN$Total_M)
 #tratando con un SpatialPolygonsDataFrame y no con un marco de datos 
 # normal, por lo tanto, filter () no funcionaría
 
-LOCALIDADES_JOIN <-subset(LOCALIDADES_JOIN, !is.na(Total_M))
+DEPARTAMENTOS_JOIN <-subset(DEPARTAMENTOS_JOIN, !is.na(Total_M))
 
 # Configuración del texto emergente
-popup_sb <- paste0("Total: ", as.character(LOCALIDADES_JOIN$Total_M))
+popup_sb <- paste0("Total: ", as.character(DEPARTAMENTOS_JOIN$Total_M))
 
-
-
+fix(DEPARTAMENTOS_JOIN)
+head(sp_df)
+fix(DEPARTAMENTOS_JOIN)
 
 # Mapeándolo con los nuevos mosaicos CartoDB.Positron
 leaflet() %>%
   addProviderTiles("CartoDB.Positron") %>%
   #setView(-98.483330, 38.712046, zoom = 4) %>% 
-  addPolygons(data = LOCALIDADES_JOIN , 
-              fillColor = ~pal(LOCALIDADES_JOIN$Total_M),
+  addPolygons(data = DEPARTAMENTOS_JOIN , 
+              fillColor = ~pal(DEPARTAMENTOS_JOIN$Total_M),
               opacity = 1,
               color = "black",
               dashArray = "3",fillOpacity = 0.9,
@@ -114,12 +136,12 @@ leaflet() %>%
                 dashArray = "",
                 fillOpacity = 1,
                 bringToFront = TRUE),
-              label = LOCALIDADES_JOIN$Etiqueta,
+              label = DEPARTAMENTOS_JOIN$Etiqueta,
               labelOptions = labelOptions(
                 style = list("font-weight" = "normal", padding = "3px 8px"),
                 textsize = "15px",
                 direction = "auto"))%>%
-  addLegend(pal = pal, values =LOCALIDADES_JOIN$Total_M, opacity = 0.7, title = NULL,
+  addLegend(pal = pal, values =DEPARTAMENTOS_JOIN$Total_M, opacity = 0.7, title = NULL,
             position = "bottomright")
 
 

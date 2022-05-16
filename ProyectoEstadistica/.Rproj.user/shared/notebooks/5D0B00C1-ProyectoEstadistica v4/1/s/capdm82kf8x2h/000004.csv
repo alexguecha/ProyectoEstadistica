@@ -1,2 +1,0 @@
-"0",""
-"0","barplot(table(BDa2censo$CodEsInversionistaRecurrente), col = ""blue"", main=""Diagrama de barras variable ¿es inversionista recurrente?"",ylim=c(0,10000),las=2, cex.names = 0.6, lwd = 1.5, cex.axis=0.9,  ylab = ""Conteos"")"

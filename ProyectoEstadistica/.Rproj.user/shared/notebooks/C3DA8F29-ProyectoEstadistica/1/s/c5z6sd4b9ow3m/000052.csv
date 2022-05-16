@@ -1,3 +1,0 @@
-"0",""
-"0","plot(IMtabla_Sturges,type='fh',main=""Histograma de frecuencias absolutas Ingresos Mes"","
-"0","     xlab="" "",ylab=""Conteos"",col=""red"", las=2)"

@@ -1,2 +1,0 @@
-"0",""
-"0","barplot(table(BDa2censo$CalidadTributaria), col = ""blue"", main=""Diagrama de barras"",ylim=c(0,13000),las=1, cex.names = 0.5, lwd = 1.5, cex.axis=0.9, xlab=""Calidad Tributaria"", ylab = ""Conteos"")"

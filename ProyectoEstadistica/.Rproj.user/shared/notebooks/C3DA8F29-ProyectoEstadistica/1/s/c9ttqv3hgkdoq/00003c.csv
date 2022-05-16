@@ -1,4 +1,0 @@
-"0",""
-"0",""
-"0","plot_ly(PTtabla4, labels = PTtabla4[,1], values = PTtabla4[,3], type = ""pie"") %>%"
-"0","  layout(title = ""Diagrama de sectores por propósito del inversionista en A2censo"")"

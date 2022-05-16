@@ -1,5 +1,0 @@
-"0",""
-"0",""
-"0",""
-"0","plot_ly(SEtabla4, labels = SEtabla4[,1], values = SEtabla4[,3], type = ""pie"") %>%"
-"0","  layout(title = ""Diagrama de sectores por Sector Económico"")"

@@ -1,8 +1,0 @@
-"0",""
-"0","#MItabla_st <- fdt(BDa2censo$MontoInversion,breaks=""Sturges"",right=F)"
-"0",""
-"0","MItabla_st <- fdt(BDa2censo$MontoInversion, start=200000, end=60000000, h=2000000)"
-"0",""
-"0","knitr::kable("
-"0","  (MItabla_st)"
-"0",")"

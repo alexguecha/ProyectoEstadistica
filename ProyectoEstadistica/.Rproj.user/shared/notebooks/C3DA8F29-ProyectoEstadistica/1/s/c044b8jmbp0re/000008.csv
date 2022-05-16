@@ -1,5 +1,0 @@
-"0",""
-"0",""
-"0",""
-"0","plot_ly(SCtabla4, labels = SCtabla4[,1], values = SCtabla4[,3], type = ""pie"") %>%"
-"0","  layout(title = ""Diagrama de sectores por Sector Campaña"")"

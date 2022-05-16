@@ -1,4 +1,0 @@
-"0",""
-"0",""
-"0","plot_ly(GItabla4, labels = GItabla4[,1], values = GItabla4[,3], type = ""pie"") %>%"
-"0","  layout(title = ""Diagrama de sectores por Grupo de Ingresos"")"

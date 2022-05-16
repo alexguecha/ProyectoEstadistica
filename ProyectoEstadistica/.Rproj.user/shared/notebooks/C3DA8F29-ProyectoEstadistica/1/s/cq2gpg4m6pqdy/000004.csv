@@ -1,2 +1,0 @@
-"0",""
-"0","barplot(table(BDa2censo$TipoInversionista), col = ""blue"", main=""Diagrama de barras"",ylim=c(0,21000),las=2, cex.names = 0.5, lwd = 1.5, cex.axis=0.9, xlab=""Tipo Inversionista"", ylab = ""Conteos"")"

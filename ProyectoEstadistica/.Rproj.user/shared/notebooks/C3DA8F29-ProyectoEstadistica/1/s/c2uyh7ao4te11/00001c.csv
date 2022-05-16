@@ -1,2 +1,0 @@
-"0",""
-"0","barplot(table(BDa2censo$Año), col = ""blue"", main=""Diagrama de barras variable Año de Inversión"",ylim=c(0,15000),las=1, cex.names = 0.6, lwd = 1.5, cex.axis=0.9,  ylab = ""Conteos"")"
