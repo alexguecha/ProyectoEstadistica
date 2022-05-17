@@ -20,7 +20,6 @@ library(tigris)
 library(dplyr)
 library(tidyr)
 library(rgdal)
-library(sf)
 library(survey)
 
 Incendios <- read_excel("Incendios.xlsx")

@@ -1,0 +1,99 @@
+"0","knitr::opts_chunk$set(echo = TRUE)"
+"0",""
+"0","library(readxl)"
+"0","library(raster)"
+"0","library(readxl)"
+"0","library(writexl)"
+"0","library(leaflet)"
+"2","Registered S3 method overwritten by 'htmlwidgets':
+  method           from         
+  print.htmlwidget tools:rstudio
+"
+"0","library(dplyr)"
+"2","
+Attaching package: ‘dplyr’
+
+"
+"2","The following objects are masked from ‘package:raster’:
+
+    intersect, select, union
+
+"
+"2","The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+"
+"2","The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+"
+"0","library(sf)"
+"2","Linking to GEOS 3.9.1, GDAL 3.3.2, PROJ 7.2.1; sf_use_s2() is TRUE
+"
+"0","library(tmap)"
+"0","library(tigris)"
+"2","To enable caching of data, set `options(tigris_use_cache = TRUE)`
+in your R script or .Rprofile.
+"
+"0","library(dplyr)"
+"0","library(tidyr)"
+"2","
+Attaching package: ‘tidyr’
+
+"
+"2","The following object is masked from ‘package:raster’:
+
+    extract
+
+"
+"0","library(rgdal)"
+"2","Please note that rgdal will be retired by the end of 2023,
+plan transition to sf/stars/terra functions using GDAL and PROJ
+at your earliest convenience.
+
+rgdal: version: 1.5-32, (SVN revision 1176)
+Geospatial Data Abstraction Library extensions to R successfully loaded
+Loaded GDAL runtime: GDAL 3.3.2, released 2021/09/01
+Path to GDAL shared files: C:/Program Files/R/R-4.2.0/library/rgdal/gdal
+GDAL binary built with GEOS: TRUE 
+Loaded PROJ runtime: Rel. 7.2.1, January 1st, 2021, [PJ_VERSION: 721]
+Path to PROJ shared files: C:/Program Files/R/R-4.2.0/library/rgdal/proj
+PROJ CDN enabled: FALSE
+Linking to sp version:1.4-7
+To mute warnings of possible GDAL/OSR exportToProj4() degradation,
+use options(""rgdal_show_exportToProj4_warnings""=""none"") before loading sp or rgdal.
+"
+"0","library(survey)"
+"2","Loading required package: grid
+"
+"2","Loading required package: Matrix
+"
+"2","
+Attaching package: ‘Matrix’
+
+"
+"2","The following objects are masked from ‘package:tidyr’:
+
+    expand, pack, unpack
+
+"
+"2","Loading required package: survival
+"
+"2","
+Attaching package: ‘survey’
+
+"
+"2","The following object is masked from ‘package:raster’:
+
+    cv
+
+"
+"2","The following object is masked from ‘package:graphics’:
+
+    dotchart
+
+"
+"0","Incendios <- read_excel(""Incendios.xlsx"")"
+"0",""
