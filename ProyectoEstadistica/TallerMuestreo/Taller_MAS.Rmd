@@ -1,0 +1,23 @@
+---
+title: "Taller_MAS"
+author: "Sergio Castañeda, Guillermo Castillo, Alexander Guecha"
+date: "16/5/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# TallerdeMuestreo:
+
+## Caso:"DesastresNaturales":
+
+En la base de datos relacionada, se encuentra el "Registro de Eventos Naturales o Antrópicos no Intencionales"ocurridos durante el año 2019, que fueron reportados a la UNGRD (Unidad Nacional para la Gestión del Riesgo de Desastres) con su respectiva afectación y atención prestada a cada uno.
+https://www.datos.gov.co/Ambiente-y-Desarrollo-Sostenible/Emergencias-UNGRD-2019/4fd8-ptcr
+(BaseExcelDepurada)
+
+## Actividad:
+1.	Asumiendo que esta base de datos es el marco de muestreo de su investigación, y teniendo en cuenta que el atributo más importante para su investigación son los EVENTOS, y en especial el evento, el evento INCENDIO DE COBERTURA VEGETAL, bajo un nivel de confianza del 93%, y asumiendo un error de muestreo en las estimaciones no superior a 3%; proporcione un tamaño mínimo de muestra (bajo un muestreo aleatorio simple), para realizar las estimaciones que se indican a continuación, semilla (3564). (Peso 30%)
+2.	A través de la muestra seleccionada, proporcione las siguientes estimaciones con su margen de error (Var, EE, CV, IC): Estimación del total de personas fallecidas, promedio de personas heridas, y la proporción de casos de EVENTOS: INCENDIOS DE COBERTURA VEGETAL ( Peso 30%)
+3.	Tome la estimación del promedio de personas heridas (calculado anteriormente), desagréguelo por departamentos, y haga una representación cartográfica (Exclusivamente con la metodología – Código R usado en la clase anterior) de su estimación promedio. (Peso 30%)
