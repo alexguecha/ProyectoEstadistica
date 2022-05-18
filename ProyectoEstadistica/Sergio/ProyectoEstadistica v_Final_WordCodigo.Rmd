@@ -1,5 +1,5 @@
 ---
-title: Crowfunding en el Mercado de Capitales Colombiano - Proyecto de Estadística
+title: Mapa Interactivo del Mercado de Capitales Colombiano - Proyecto de Estadística
   para la Analítica de Datos
 author: "Sergio Castañeda, Guillermo Castillo, Alexander Guecha"
 date: "18/05/2022"
@@ -16,8 +16,8 @@ Con la anterior información se puede ser mas especifico con el portafolio que s
 
 
 ```{r setup, include=T,error=FALSE,warning=T}
-knitr::opts_chunk$set(echo = T)
-knitr::opts_chunk$set(echo = T)
+knitr::opts_chunk$set(echo = F)
+knitr::opts_chunk$set(echo = F)
 library(readxl)
 library(ggplot2)
 library(dplyr)
