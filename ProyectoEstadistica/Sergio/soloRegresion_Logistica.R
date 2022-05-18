@@ -60,6 +60,7 @@ summary(logMultiple2)
 
 
 
+## Predicciones
 
 # Elaboramos las respectivas predicciones de acaurdo al modelo escogido para evalaur el desempeño del mismo
 predict <- predict(logMultiple, type = 'response')
@@ -70,15 +71,18 @@ optCutOff <- optimalCutoff(training$Inv_Recurrente, predict)[1]
 
 optCutOff
 
+## matriz de confusion 
 # Por medio de la siguente matriz de confusion podemos evalaur el ajsute del modelo , tomado como criterio de corte el valor estimado 0.457 en el paso anterior. 
 confusionMatrix(training$Inv_Recurrente, predict, threshold = optCutOff)
+
 sensitivity(training$Inv_Recurrente, predict, threshold = optCutOff)
 #Se concluye que el modelo acertó en el 27% de las observaciones de verdaderos positivos ( Grado de Sensibilidad), es decir solo identifica un 27% de los positivos reales
 specificity(training$Inv_Recurrente,predict, threshold = optCutOff)
 # La especificidad mide la tasa de verdadero negativos, es decir para este caso el modelo identifica el 89% de los negativos reales
 
 negPredValue(training$Inv_Recurrente,predict, threshold = optCutOff)
-#
+
+## Curva ROC
 #La curva característica operativa o curva ROC  permite identificar el rendimiento de un clasificador, en este caso el modelo de regresión logística. El área bajo la curva mide la relación entre la tasa de verdaderos positivos y la tasa de falsos positivos (1-Especificidad) en varios valores de umbral
 
 plotROC(training$Inv_Recurrente, predict)

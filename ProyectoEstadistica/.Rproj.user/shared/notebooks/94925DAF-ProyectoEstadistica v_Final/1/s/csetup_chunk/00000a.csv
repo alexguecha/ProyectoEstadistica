@@ -1,0 +1,245 @@
+"0","knitr::opts_chunk$set(echo = F)"
+"0","knitr::opts_chunk$set(echo = F)"
+"0","library(readxl)"
+"0","library(ggplot2)"
+"0","library(dplyr)"
+"2","
+Attaching package: ‘dplyr’
+
+"
+"2","The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+"
+"2","The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+"
+"0","library(fBasics)"
+"2","Loading required package: timeDate
+"
+"2","Loading required package: timeSeries
+"
+"0","library(MASS)"
+"2","
+Attaching package: ‘MASS’
+
+"
+"2","The following object is masked from ‘package:dplyr’:
+
+    select
+
+"
+"0","library(corrgram)"
+"0","library(gclus)"
+"2","Loading required package: cluster
+"
+"0","library(descr)"
+"0","library(GGally)"
+"2","Registered S3 method overwritten by 'GGally':
+  method from   
+  +.gg   ggplot2
+"
+"0","library(agricolae)"
+"2","
+Attaching package: ‘agricolae’
+
+"
+"2","The following objects are masked from ‘package:timeDate’:
+
+    kurtosis, skewness
+
+"
+"0","library(plotly)"
+"2","
+Attaching package: ‘plotly’
+
+"
+"2","The following object is masked from ‘package:MASS’:
+
+    select
+
+"
+"2","The following object is masked from ‘package:timeSeries’:
+
+    filter
+
+"
+"2","The following object is masked from ‘package:ggplot2’:
+
+    last_plot
+
+"
+"2","The following object is masked from ‘package:stats’:
+
+    filter
+
+"
+"2","The following object is masked from ‘package:graphics’:
+
+    layout
+
+"
+"0","library(fdth)"
+"2","
+Attaching package: ‘fdth’
+
+"
+"2","The following objects are masked from ‘package:stats’:
+
+    sd, var
+
+"
+"0","library(caTools)"
+"0","library(ROCR)"
+"0","library(pROC)"
+"2","Type 'citation(""pROC"")' for a citation.
+"
+"2","
+Attaching package: ‘pROC’
+
+"
+"2","The following object is masked from ‘package:fdth’:
+
+    var
+
+"
+"2","The following objects are masked from ‘package:stats’:
+
+    cov, smooth, var
+
+"
+"0","library(car)"
+"2","Loading required package: carData
+"
+"2","
+Attaching package: ‘car’
+
+"
+"2","The following object is masked from ‘package:fBasics’:
+
+    densityPlot
+
+"
+"2","The following object is masked from ‘package:dplyr’:
+
+    recode
+
+"
+"0","library(foreign)"
+"0","library(apaTables)"
+"0","library(PerformanceAnalytics)"
+"2","Loading required package: xts
+"
+"2","Loading required package: zoo
+"
+"2","
+Attaching package: ‘zoo’
+
+"
+"2","The following object is masked from ‘package:timeSeries’:
+
+    time<-
+
+"
+"2","The following objects are masked from ‘package:base’:
+
+    as.Date, as.Date.numeric
+
+"
+"2","
+Attaching package: ‘xts’
+
+"
+"2","The following objects are masked from ‘package:dplyr’:
+
+    first, last
+
+"
+"2","
+Attaching package: ‘PerformanceAnalytics’
+
+"
+"2","The following objects are masked from ‘package:agricolae’:
+
+    kurtosis, skewness
+
+"
+"2","The following objects are masked from ‘package:timeDate’:
+
+    kurtosis, skewness
+
+"
+"2","The following object is masked from ‘package:graphics’:
+
+    legend
+
+"
+"0","library(psych)"
+"2","
+Attaching package: ‘psych’
+
+"
+"2","The following object is masked from ‘package:car’:
+
+    logit
+
+"
+"2","The following object is masked from ‘package:fBasics’:
+
+    tr
+
+"
+"2","The following object is masked from ‘package:timeSeries’:
+
+    outlier
+
+"
+"2","The following objects are masked from ‘package:ggplot2’:
+
+    %+%, alpha
+
+"
+"0","library(corrr)"
+"0","library(igraph)"
+"2","
+Attaching package: ‘igraph’
+
+"
+"2","The following object is masked from ‘package:plotly’:
+
+    groups
+
+"
+"2","The following object is masked from ‘package:agricolae’:
+
+    similarity
+
+"
+"2","The following objects are masked from ‘package:gclus’:
+
+    diameter, star
+
+"
+"2","The following objects are masked from ‘package:dplyr’:
+
+    as_data_frame, groups, union
+
+"
+"2","The following objects are masked from ‘package:stats’:
+
+    decompose, spectrum
+
+"
+"2","The following object is masked from ‘package:base’:
+
+    union
+
+"
+"0","library(corrgram)"
+"0","library(gclus)"
+"0","library(GGally)"
+"0","library(gvlma)"
+"0",""
