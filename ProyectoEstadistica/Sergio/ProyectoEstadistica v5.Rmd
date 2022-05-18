@@ -34,6 +34,18 @@ library(caTools)
 library(ROCR)
 library(pROC)
 
+library(car)
+library(foreign)
+library(apaTables)
+library(PerformanceAnalytics)
+library(psych)
+library(corrr)
+library(igraph)
+library(corrgram)
+library(gclus)
+library(GGally)
+library(gvlma)
+
 ```
 
 ```{r}
@@ -1027,18 +1039,7 @@ Despues de correr varias regresiones, se concluye que no hay una correlación si
 
 # ----------------Inicio nuevas regresiones Guillermo----------------------
 
-```{r}
-ipak <- function(pkg){
-  new.pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])]
-  if (length(new.pkg)) 
-    install.packages(new.pkg, dependencies = TRUE)
-  sapply(pkg, require, character.only = TRUE)
-}
 
-packages <- c("forestmodel","see","jtools","olsrr","parameters","stats","ggplot2", "palmerpenguins", "plot3D" , "plot3Drgl","apaTables","gvlma","broomExtra","performance")
-ipak(packages)
-
-```
 
 # Paso Cero:  
 Para facilidad de interpretación de las gráficas se  pretende manejar una escala lo más similar posible por lo tanto se transformarán las variables de: ingreso mes , monto de inversión y patrimonio a millones dividiendo en un millón. 
@@ -1114,7 +1115,7 @@ Los predictores deben ser independientes,no debe de haber colinialidad entre ell
 
 ```{r}
 
-vif(modelo1)
+vif(modeloMultiple1)
 ```
 Este resultado para todas las variables predciotres no esta dando ligeramente mayor a 1 , por lo tanto hay un indicio de una posible colinialidad. Es relvante seguir evaluando los demas supuestos, par atebner la certeza q no se cumple y q no se podria usar un modelo de regresion como herramienta predicora. 
 
@@ -1142,7 +1143,7 @@ mean(modeloMultiple1$residuals)
 # Si la relación es lineal,los residuos se distribuyen de forma aleatoria entorno a cero
 
 ```{r}
-install.packages('ggfortify')
+
 library(ggfortify)
 autoplot(modeloMultiple1,2)  ## Qqplot
 
@@ -1172,51 +1173,14 @@ Para validar esto supuesto , realizamos prueba Durbin Watson y evidecmoa q el p-
 durbinWatsonTest(modeloMultiple1)  # no cumple test de independencia
 
 plot(modeloMultiple1$resid) # existe un patron , significa q no pasa la prueba , no son independintes
-acf(modelo1$residuals)  # Si usamos una gracica de autocorrelacion envidenciamos q los residuos no se establizand de manera alterna al interio del intervalo de confianza , por lo tanto se peude inferir que existe autocorrelacion 
+acf(modeloMultiple1$residuals)  # Si usamos una gracica de autocorrelacion envidenciamos q los residuos no se establizand de manera alterna al interio del intervalo de confianza , por lo tanto se peude inferir que existe autocorrelacion 
 
 ```
 
 Con animo ilustrativo y para confirmar se realiza una representación 3D de la regresión con solo dos variables predictoras ( edad y patrimonio)
 
 
-```{r}
-z<-BDa2censo$MontoInversion
-y<-BDa2censo$Patrimonio
-x<-BDa2censo$Edad
 
-scatter3D(x, y, z, theta = 15, phi = 20)
-scatter3D(x, y, z, phi = 0, bty ="g")
-scatter3D(x, y, z, pch = 18,  theta = 20, phi = 20,
-          main = "Modelo Monto de Inversión", xlab = "Edad",
-          ylab ="Patrimonio", zlab = "Inversion")
-
-scatter3D(x, y, z, phi = 0, bty = "g",
-          pch = 20, cex = 2, ticktype = "detailed",xlab = "Edad",
-          ylab ="Patrimonio", zlab = "Inversion")
-
-objr<-lm(z ~ x+y)
-objr
-
-grid.lines = 26
-x.pred <- seq(min(x), max(x), length.out = grid.lines)
-y.pred <- seq(min(y), max(y), length.out = grid.lines)
-xy <- expand.grid( x = x.pred, y = y.pred)
-z.pred <- matrix(predict(objr, newdata = xy), 
-                 nrow = grid.lines, ncol = grid.lines)
-
-# Marcamos las líneas de iteracción para que busquen la recta de regresión
-fitpoints <- predict(objr)
-#ploteamos la gráfica en 3d con recta de regresión
-scatter3D(x, y, z, pch = 18, cex = 2, 
-          theta = 20, phi = 20, ticktype = "detailed",
-          xlab = "Edad", ylab = "Patrimonio", zlab = "Inversion",  
-          surf = list(x = x.pred, y = y.pred, z = z.pred,  
-                      facets = NA, fit = fitpoints), main = "")
-
-plotrgl() ### ojo interactivo
-
-
-```
 
 #-----------------Fin nuevas regresiones Guillermo
 

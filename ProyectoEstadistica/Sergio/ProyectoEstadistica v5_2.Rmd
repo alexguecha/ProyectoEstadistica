@@ -16,8 +16,8 @@ Con la anterior información se puede ser mas especifico con el portafolio que s
 
 
 ```{r setup, include=T,error=FALSE,warning=T}
-knitr::opts_chunk$set(echo = F)
-knitr::opts_chunk$set(echo = F)
+knitr::opts_chunk$set(echo = T)
+knitr::opts_chunk$set(echo = T)
 library(readxl)
 library(ggplot2)
 library(dplyr)
@@ -630,19 +630,10 @@ ResumenArmonica<- c(armonic(BDa2censo$Edad),armonic(BDa2censo$Tasa),armonic(BDa2
 ResumenRecortada<- c(recortada(BDa2censo$Edad),recortada(BDa2censo$Tasa),recortada(BDa2censo$IngresosMes),recortada(BDa2censo$Patrimonio), recortada(BDa2censo$MontoInversion),recortada(BDa2censo$CantidadInversiones))
 ResumenWinsorizada<- c(winsorizada(BDa2censo$Edad),winsorizada(BDa2censo$Tasa),winsorizada(BDa2censo$IngresosMes),winsorizada(BDa2censo$Patrimonio), winsorizada(BDa2censo$MontoInversion),winsorizada(BDa2censo$CantidadInversiones))
 
-resumenMedia <- data.frame(ResumenVaribles ,ResumenPromedio,ResumenMediana,ResumenGeometrica)
+resumenMedia <- data.frame(ResumenVaribles ,ResumenPromedio,ResumenMediana,ResumenGeometrica,ResumenArmonica,ResumenRecortada,ResumenWinsorizada)
 
-resumenMedia1 <- data.frame(ResumenVaribles ,ResumenArmonica,ResumenRecortada,ResumenWinsorizada)
+resumenMedia
 
-
-knitr::kable(
-  (resumenMedia)
-)
-
-
-knitr::kable(
-  (resumenMedia1)
-)
 
 ```
 
