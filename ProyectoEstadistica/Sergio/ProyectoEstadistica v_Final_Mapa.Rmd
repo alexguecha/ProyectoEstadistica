@@ -1,0 +1,241 @@
+---
+title: Mapa Interactivo del Mercado de Capitales Colombiano - Proyecto de Estadística
+  para la Analítica de Datos
+author: "Sergio Castañeda, Guillermo Castillo, Alexander Guecha"
+date: "18/05/2022"
+output:
+  html_document:
+    df_print: paged
+  word_document: default
+  pdf_document: default
+---
+
+
+
+```{r setup, include=F,error=FALSE,warning=F}
+knitr::opts_chunk$set(echo = F)
+knitr::opts_chunk$set(echo = F)
+library(readxl)
+library(ggplot2)
+library(dplyr)
+library(fBasics)
+library(MASS)
+library(corrgram)
+library(gclus)
+library(descr)
+library(GGally)
+library(agricolae)
+library(plotly)
+library(fdth)
+library(caTools)
+library(ROCR)
+library(pROC)
+
+library(car)
+library(foreign)
+library(apaTables)
+library(PerformanceAnalytics)
+library(psych)
+library(corrr)
+library(igraph)
+library(corrgram)
+library(gclus)
+library(GGally)
+library(gvlma)
+
+```
+
+```{r}
+
+
+
+library(readxl)
+BDa2censo <- read_excel("BD inversionistas depurada V6 anonimizada.xlsx")
+
+```
+
+
+# Muestreo
+
+```{r , include=F,error=FALSE,warning=F}
+N=nrow(BDa2censo)
+n=500
+set.seed(123)
+masBD <- BDa2censo [ sample (N, size = n ),]
+
+
+MediaEdad=round(mean(masBD$Edad),2)
+MediaEdad
+
+VarEdad=var(masBD$Edad)
+VarEdad
+
+
+VarEstim=round(((1-n/N)*VarEdad/n),2)
+VarEstim
+
+
+EE=round(sqrt(VarEstim),2)
+EE
+
+CV=round((EE/MediaEdad)*100,2)
+CV
+
+valort=qt(c(0.025),df=(n-1),lower.tail = FALSE)# probabilidad de cola 0.025 equivle a nivel de confianza del 95%, ya q la dist t es simetrica
+
+Lsup=round(MediaEdad+(valort*EE),2) 
+Linf=round(MediaEdad-(valort*EE),2)
+
+
+round(c(VarEdad,Linf),digit=2)
+resumenMediaEdad <- data.frame(n ,MediaEdad,VarEstim,EE,Linf,Lsup,CV)
+resumenMediaEdad
+mean(BDa2censo$Edad)
+ ######
+
+MediaInversion=mean(masBD$MontoInversion)
+VarMuestraInv =var(masBD$MontoInversion)
+VarEstimadaMediaInv=((N-n)/N)*(VarMuestraInv/n)
+
+
+
+VarEstimInv=round(((1-n/N)*VarEstimadaMediaInv/n),2)
+VarEstimInv
+
+
+EEmediaInv=round(sqrt(VarEstimInv),2)
+EEmediaInv
+
+CVmediaInv=round((EEmediaInv/MediaInversion)*100,2)
+CVmediaInv
+
+valort=qt(c(0.025),df=(n-1),lower.tail = FALSE)# probabilidad de cola 0.025 equivle a nivel de confianza del 95%, ya q la dist t es simetrica
+
+LsupMediaInv=round(MediaInversion+(valort*EEmediaInv),2) 
+LinfMediaInv=round(MediaInversion-(valort*EEmediaInv),2)
+
+
+
+resumenMediaInversion <- data.frame(n ,MediaInversion,VarEstimInv,EEmediaInv,LinfMediaInv,LsupMediaInv,CVmediaInv)
+resumenMediaInversion
+mean(BDa2censo$MontoInversion)
+
+
+###
+
+MediaInversion=mean(masBD$MontoInversion)
+TotalInversion=N*MediaInversion
+TotalInversion
+
+VarMuestra =var(masBD$MontoInversion)
+VarEstimadaMedia=((N-n)/N)*(VarMuestra/n)
+
+VarEstimadaTotal=N*N*VarEstimadaMedia
+EEtotal=sqrt(VarEstimadaTotal)
+
+
+CVtotal=round((EEtotal/TotalInversion)*100,2)
+CVtotal
+
+LsupTotal=round(TotalInversion+(valort*EEtotal),2) 
+LinfTotal=round(TotalInversion-(valort*EEtotal),2)
+
+sum(BDa2censo$MontoInversion)
+
+resumenTotalInversion <- data.frame(n ,TotalInversion,VarEstimadaTotal,EEtotal,LinfTotal,LsupTotal,CVtotal)
+resumenTotalInversion
+####
+
+library(rgdal)
+library(sf)
+
+sp_df <- readOGR(dsn = "MGN2021_DPTO_POLITICO", layer = "MGN_DPTO_POLITICO")
+
+#head(sp_df)
+#fix(sp_df)
+#as.data.frame(sp_df)
+
+DPTO_SH="MGN2021_DPTO_POLITICO/MGN_DPTO_POLITICO.shp"
+
+DPTO_SH2 <- st_read(DPTO_SH)
+
+library(raster)
+library(leaflet)
+library(dplyr)
+library(sf)
+library(tmap)
+library(tigris)
+library(dplyr)
+InverDepto <- masBD %>%
+  group_by(Departamento) %>%
+  summarise(promedioEdad = mean(Edad),promedioInver = mean(MontoInversion),Cod_Dpto)
+
+
+
+
+# Para visualizar la base resumida
+ResumenInv=as.data.frame(InverDepto)
+#ResumenInv
+
+
+library(tidyr)
+Etiquetas=unite(ResumenInv, Etiqueta,c(1,2,3), sep = ": ", remove = TRUE)
+Etiquetas=Etiquetas[,1]
+#Etiquetas
+
+
+
+Resumen3=cbind(ResumenInv, Etiquetas )
+#Resumen3
+
+
+#DPTO_SH2
+
+DPTO_JOIN <- geo_join(DPTO_SH2, Resumen3,"DPTO_CCDGO", "Cod_Dpto")
+##DPTO_JOIN = as.data.frame(DPTO_JOIN)
+#DPTO_JOIN
+
+
+pal <- colorNumeric( palette = "RdYlBu", domain=DPTO_JOIN$promedioInver)  #palette = "YlGnBu"   "RdBu"  "RdYlBu"  "Spectral"  "Paired"  "PuRd"  "RdYlGn"
+
+popup_sb <- paste0("Promedio de Monto de Inversión: ", as.character(DPTO_JOIN$promedioInver))
+
+
+
+
+```
+
+```{r,error=FALSE,warning=F}
+
+leaflet(sp_df) %>%
+  addProviderTiles("CartoDB.Positron") %>%
+  #setView(-98.483330, 38.712046, zoom = 4) %>% 
+  addPolygons(data = DPTO_JOIN , 
+              fillColor = ~pal(DPTO_JOIN$promedioInver),
+              opacity = 1,
+              color = "black",
+              dashArray = "3",fillOpacity = 0.9,
+              highlight = highlightOptions(
+                weight = 1,
+                color = "#666",
+                dashArray = "",
+                fillOpacity = 1,
+                bringToFront = TRUE),
+              label = DPTO_JOIN$Etiquetas,
+              labelOptions = labelOptions(
+                style = list("font-weight" = "normal", padding = "3px 8px"),
+                textsize = "15px",
+                direction = "auto"))%>%
+  addLegend(pal = pal, values =DPTO_JOIN$promedioInver, opacity = 0.7, title = NULL,
+            position = "bottomright")
+
+
+```
+
+
+
+
+
+
+
+
