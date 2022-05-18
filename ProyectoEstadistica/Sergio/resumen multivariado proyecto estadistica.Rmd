@@ -1,0 +1,163 @@
+---
+title: Crowfunding en el Mercado de Capitales Colombiano - Proyecto de Estadística
+  para la Analítica de Datos
+author: "Sergio Castañeda, Guillermo Castillo, Alexander Guecha"
+date: "24/04/2022"
+output:
+  html_document:
+    df_print: paged
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=T,error=FALSE,warning=T}
+knitr::opts_chunk$set(echo = F)
+knitr::opts_chunk$set(echo = F)
+library(readxl)
+library(ggplot2)
+library(dplyr)
+library(fBasics)
+library(MASS)
+library(corrgram)
+library(gclus)
+library(descr)
+library(GGally)
+library(agricolae)
+library(plotly)
+library(fdth)
+library(caTools)
+library(ROCR)
+library(pROC)
+
+```
+
+## 2. Resumen Multivariado entre variables Cualitativas y cuantitativas
+
+A continuación se realizará un analisis Multivariado que contemple dos de las variables cualitativas de mayor interés del estudio en cuestión, respecto a las variables cuantitativas evaluadas que permiten entender el comportamiento de inversión. Dichas variables son el monto invertido y la recurrencia de inversión
+
+# Analisis del propósito de inversión a la luz de las variables de interés cualitativas y cuantitativas
+
+```{r}
+
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+df1 <- BDa2censo %>%
+  dplyr::group_by(Propósito, GrupoEdad)%>%
+  dplyr::summarize(Mean = round(mean(MontoInversion, na.rm=TRUE)))
+
+
+ggplot(df1, aes(Propósito, GrupoEdad, fill= Mean)) + geom_tile() +
+  scale_fill_gradient(low="white", high="blue") + theme(text = element_text(size=9), axis.text.x = element_text(angle=50, hjust=1)) + ggtitle("Comparativa Rangos de edad vs Propósito vs monto invertido") + ylab("Rango de edad") + xlab("Propósito del inversionista") + labs(fill = "promedio de Monto invertido")+
+  geom_text(aes(label = Mean), color = "black", size = 2)
+```
+
+Del anterior grafico podemos observar como de manera general el promedio de monto invertido incrementa con el rango de edad, en donde podemos observar que los mayores montos promedios invertidos concuerdan con un interés de diversificar el portafolio de inversión en personas mayores de 55 años 
+
+# Analisis de la cantidad de inversiones realizadas respecto al grupo de edad y el propósito de inversión
+
+```{r}
+
+df2 <- BDa2censo %>%
+  dplyr::group_by(Propósito, GrupoEdad)%>%
+  dplyr::summarize(Mean = round(mean(CantidadInversiones, na.rm=TRUE)))
+
+ggplot(df2, aes(Propósito, GrupoEdad, fill= Mean)) + geom_tile() +
+  scale_fill_gradient(low="white", high="blue") + theme(text = element_text(size=9), axis.text.x = element_text(angle=50, hjust=1))+ ggtitle("Comparativa Rangos de edad vs Propósito vs Cantidad de inversiones") + ylab("Rango de edad") + xlab("Propósito del inversionista") + labs(fill = "Cantidad de inversiones") +
+  geom_text(aes(label = Mean), color = "black", size = 2) 
+```
+
+Respecto a la cantidad de inversiones realizadas resulta llamativo observar que personas entre 55 y 65 años tienen un proposito de afiliación a la comunidad de a2censo y en general son las personas con mayor recurrencia de inversiones desde los datos promedio de inversiones realizadas
+
+# Analisis de la cantidad de inversiones realizadas respecto al sector económico de la campaña y el propósito de inversión
+
+```{r}
+
+df3 <- BDa2censo %>%
+  dplyr::group_by(Propósito, GrupoIngresos)%>%
+  dplyr::summarize(Mean = round(mean(MontoInversion, na.rm=TRUE)))
+
+ggplot(df3, aes(Propósito, GrupoIngresos , fill= Mean)) + geom_tile() +
+  scale_fill_gradient(low="white", high="blue") + theme(text = element_text(size=9), axis.text.x = element_text(angle=50, hjust=1))+ ggtitle("Comparativa Proposito vs ingresos vs Monto invertido") + ylab("Rango de ingresos") + xlab("Propósito del inversionista") + labs(fill = "Promedio invertido") +
+  geom_text(aes(label = Mean), color = "black", size = 2) 
+```
+
+Desde los valores promedio de monto invertido resulta llamativo observar que los montos de inversión incrementan a medida que los rangos salariales tambien incrementan
+
+
+
+```{r}
+
+df4 <- BDa2censo %>%
+  dplyr::group_by(Propósito, GrupoIngresos)%>%
+  dplyr::summarize(Mean = round(mean(CantidadInversiones, na.rm=TRUE)))
+
+ggplot(df4, aes(Propósito, GrupoIngresos , fill= Mean)) + geom_tile() +
+  scale_fill_gradient(low="white", high="blue") + theme(text = element_text(size=9), axis.text.x = element_text(angle=50, hjust=1))+ ggtitle("Comparativa Proposito vs ingresos vs Cantidad inversiones") + ylab("Rango de ingresos") + xlab("Propósito del inversionista") + labs(fill = "Promedio de inversiones") +
+  geom_text(aes(label = Mean), color = "black", size = 2) 
+```
+Por otro lado si se analizan los rangos de ingresos y propósitos a la luz del promedio de inversiones realizadas podemos ver como personas con mayores ingresos y con interés de diversificar el portafolio de inversion son quienes mas inversiones recurrentes realizan. No obstante hay un grupo de personas de bajos ingresos entre 1 y3 millones mensualees con interéses de afiliación a la comunidad de a2censo que estan invirtiendo en promedio 15 veces, demostrando una recurrencia de inversiones de bajos montos
+
+#Analisis desde la recurrencia de inversión a la luz de las demás variables de interés cualitativas y cuantitativas
+
+```{r}
+
+df5 <- BDa2censo %>%
+  dplyr::group_by(CodEsInversionistaRecurrente, GrupoEdad)%>%
+  dplyr::summarize(Mean = round(mean(MontoInversion, na.rm=TRUE)))
+
+ggplot(df5, aes(CodEsInversionistaRecurrente, GrupoEdad, fill= Mean)) + geom_tile() +
+  scale_fill_gradient(low="white", high="blue") + theme(text = element_text(size=9), axis.text.x = element_text(angle=90, hjust=1)) + ggtitle("Comparativa Rango de edad vs Recurrencia vs Monto invertido") + ylab("Rango de edad") + xlab("Recurrencia del inversionista") + labs(fill = "Promedio invertido") +
+  geom_text(aes(label = Mean), color = "black", size = 2) 
+```
+Podemos encontrar como los montos promedios invertidos suelen ser mayores en inversionistas no recurrentes con rangos de edad superiores a los 55 años
+
+```{r}
+
+df6 <- BDa2censo %>%
+  dplyr::group_by(CodEsInversionistaRecurrente, GrupoEdad)%>%
+  dplyr::summarize(Mean = round(mean(CantidadInversiones, na.rm=TRUE)))
+
+ggplot(df6, aes(CodEsInversionistaRecurrente, GrupoEdad, fill= Mean)) + geom_tile() +
+  scale_fill_gradient(low="white", high="blue") + theme(text = element_text(size=9), axis.text.x = element_text(angle=90, hjust=1)) + ggtitle("Comparativa Rango de edad vs Recurrencia vs cantidad de inversiones") + ylab("Rango de edad") + xlab("Recurrencia del inversionista") + labs(fill = "Promedio de inversiones") +
+  geom_text(aes(label = Mean), color = "black", size = 2) 
+```
+Podemos encontrar como en inversionistas recurrentes el promedio de inversiones es 6 inversiones respecto a mas o menos 20 inversiones que suelen realizar los inversionistas recurrentes
+
+
+#Analisis desde los rangos de edad y rangos de ingresos a la luz de las variables cuantitativas de interés
+
+```{r}
+
+df7 <- BDa2censo %>%
+  dplyr::group_by(GrupoIngresos, GrupoEdad)%>%
+  dplyr::summarize(Mean = round(mean(MontoInversion, na.rm=TRUE)))
+
+ggplot(df7, aes(GrupoIngresos, GrupoEdad, fill= Mean)) + geom_tile() +
+  scale_fill_gradient(low="white", high="blue") + theme(text = element_text(size=9), axis.text.x = element_text(angle=90, hjust=1)) + ggtitle("Comparativa Rango de edad vs rango ingresos vs monto invertido") + ylab("Rango de edad") + xlab("Rango de ingresos") + labs(fill = "Promedio de inversiones") +
+  geom_text(aes(label = Mean), color = "black", size = 2) 
+```
+ahora bien, al realizar el analisis entre rangos de edad y de ingresos podemos observar como los mayores valores promedio de inversión se encuentran en personas con ingresos entre 3y 5 millones de mas  de 65 años. personas con ingresos entre 7 y 9 millones con rangos de eedad entre 55 a 65  y las personas con ingresos de mas de 10 millones de pesos.
+
+Analisis
+
+```{r}
+
+df8 <- BDa2censo %>%
+  dplyr::group_by(GrupoIngresos, GrupoEdad)%>%
+  dplyr::summarize(Mean = round(mean(CantidadInversiones, na.rm=TRUE)))
+
+ggplot(df8, aes(GrupoIngresos, GrupoEdad, fill= Mean)) + geom_tile() +
+  scale_fill_gradient(low="white", high="blue") + theme(text = element_text(size=9), axis.text.x = element_text(angle=90, hjust=1)) + ggtitle("Comparativa Rango de edad vs rango ingresos vs cantidad de inversiones") + ylab("Rango de edad") + xlab("Rango de ingresos") + labs(fill = "Promedio de inversiones") +
+  geom_text(aes(label = Mean), color = "black", size = 2) 
+```
+
+Finalmente podemos observar que de acuerdo al valor promedio de inversiones realizads, los grupos con mayor recurrencia de inversión se encuentra en las edades entre 45 y 55 años con ingresos entre 7 y 9 millones. Por otro lado personas con ingresos superiores a 10 MM suelen invertir de manera más recurrente.
+
+
+
+
+## Conclusiones generales
+
