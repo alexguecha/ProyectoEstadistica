@@ -1,0 +1,116 @@
+"0","knitr::opts_chunk$set(echo = F)"
+"0","knitr::opts_chunk$set(echo = F)"
+"0","library(readxl)"
+"0","library(ggplot2)"
+"0","library(dplyr)"
+"2","
+Attaching package: ‘dplyr’
+
+"
+"2","The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+"
+"2","The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+"
+"0","library(fBasics)"
+"2","Loading required package: timeDate
+"
+"2","Loading required package: timeSeries
+"
+"0","library(MASS)"
+"2","
+Attaching package: ‘MASS’
+
+"
+"2","The following object is masked from ‘package:dplyr’:
+
+    select
+
+"
+"0","library(corrgram)"
+"0","library(gclus)"
+"2","Loading required package: cluster
+"
+"0","library(descr)"
+"0","library(GGally)"
+"2","Registered S3 method overwritten by 'GGally':
+  method from   
+  +.gg   ggplot2
+"
+"0","library(agricolae)"
+"2","
+Attaching package: ‘agricolae’
+
+"
+"2","The following objects are masked from ‘package:timeDate’:
+
+    kurtosis, skewness
+
+"
+"0","library(plotly)"
+"2","
+Attaching package: ‘plotly’
+
+"
+"2","The following object is masked from ‘package:MASS’:
+
+    select
+
+"
+"2","The following object is masked from ‘package:timeSeries’:
+
+    filter
+
+"
+"2","The following object is masked from ‘package:ggplot2’:
+
+    last_plot
+
+"
+"2","The following object is masked from ‘package:stats’:
+
+    filter
+
+"
+"2","The following object is masked from ‘package:graphics’:
+
+    layout
+
+"
+"0","library(fdth)"
+"2","
+Attaching package: ‘fdth’
+
+"
+"2","The following objects are masked from ‘package:stats’:
+
+    sd, var
+
+"
+"0","library(caTools)"
+"0","library(ROCR)"
+"0","library(pROC)"
+"2","Type 'citation(""pROC"")' for a citation.
+"
+"2","
+Attaching package: ‘pROC’
+
+"
+"2","The following object is masked from ‘package:fdth’:
+
+    var
+
+"
+"2","The following objects are masked from ‘package:stats’:
+
+    cov, smooth, var
+
+"
+"0","library(car)"
+"2","Error in library(car) : there is no package called ‘car’
+"
