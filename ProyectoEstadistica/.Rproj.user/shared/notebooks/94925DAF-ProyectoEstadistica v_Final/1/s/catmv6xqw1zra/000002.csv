@@ -1,7 +1,0 @@
-"0","library(plot3D)"
-"0","library(plot3Drgl)"
-"2","Loading required package: rgl
-"
-"0","z<-BDa2censo$MontoInversion"
-"2","Error: object 'BDa2censo' not found
-"
