@@ -118,16 +118,6 @@ install.packages('ggfortify')
 library(ggfortify)
 autoplot(modeloMultiple1,2)  ## Qqplot
 
-
-
-
-
-
-
-
-
-
-
 #4.Homocedasticidad Para valdiar este supuesto acudiremos  a realizar el test de Breusch-Pagan, el cual nos arrojo un  p-value de 2.2e-16 , lo cual nso permite rechazr la hipotesis nula q existe varibilidad constante de los residuos. Es decir q no se presenta homcedasticidad, imcumpliendo asi el supuesto . Adcionalmente en la grafica podemos observar un incremnto en valor absoluto de los residuos estudentizados, confirmando la heterocedasticidad de los residuos.
 
 
@@ -148,13 +138,6 @@ plot(modeloMultiple1$resid) # existe un patron , significa q no pasa la prueba ,
 acf(modelo1$residuals)  # Si usamos una gracica de autocorrelacion envidenciamos q los residuos no se establizand de manera alterna al interio del intervalo de confianza , por lo tanto se peude inferir que existe autocorrelacion 
 
 
-
-
-
-
-
-
-
 #Con animo ilustrativo y para confirmar se realiza una representación 3D de la regresión con solo dos variables predictoras ( edad y patrimonio)
 z<-BDa2censo$MontoInversion
 y<-BDa2censo$Patrimonio
@@ -169,9 +152,6 @@ scatter3D(x, y, z, pch = 18,  theta = 20, phi = 20,
 scatter3D(x, y, z, phi = 0, bty = "g",
           pch = 20, cex = 2, ticktype = "detailed",xlab = "Edad",
           ylab ="Patrimonio", zlab = "Inversion")
-
-
-
 
 objr<-lm(z ~ x+y)
 objr
